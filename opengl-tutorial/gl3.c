@@ -1,6 +1,6 @@
 #include <GL/glew.h>		// Include the GLEW header file
 #include <GL/glut.h>		// Include the GLUT header file
-#include <stdlib.h>
+#include <stdio.h>
 
 int keyStates[256] = {0};
 int keySpecialStates[254] = {0};

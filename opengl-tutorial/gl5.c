@@ -3,7 +3,6 @@
 #include <stdio.h>
 
 int keyStates[256] = {0};
-int keySpecialStates[254] = {0};
 
 void KeyOperations(void)
 {
@@ -16,15 +15,27 @@ void KeyOperations(void)
 void renderPrimitive(void)
 {
 	glPointSize(10.0f);
+	glColor3f(0.0f, 0.0f, 1.0f); //set the color of the square to blue
 	glBegin(GL_QUADS);
-	//glBegin(GL_POINTS);
-	//glBegin(GL_LINE_LOOP);
-	//glBegin(GL_TRIANGLE_FAN);
 	glVertex3f(-1.0f, -1.0f, 0.0f); // The bottom left corner  
 	glVertex3f(-1.0f, 1.0f, 0.0f); // The top left corner  
 	glVertex3f(1.0f, 1.0f, 0.0f); // The top right corner  
 	glVertex3f(1.0f, -1.0f, 0.0f); // The bottom right corner  
-	//glVertex3f(-1.0f, -1.0f, 0.0f);
+	glEnd();
+}
+
+void renderPrimitive2(void)
+{
+	glPointSize(10.0f);
+	glBegin(GL_QUADS);
+	glColor3f(1.0f, 0.0f, 0.0f);
+	glVertex3f(-1.0f, -1.0f, 0.0f); // The bottom left corner
+	glColor3f(0.0f, 1.0f, 0.0f);
+	glVertex3f(-1.0f, 1.0f, 0.0f); // The top left corner  
+	glColor3f(0.0f, 0.0f, 1.0f);
+	glVertex3f(1.0f, 1.0f, 0.0f); // The top right corner  
+	glColor3f(1.0f, 1.0f, 1.0f);
+	glVertex3f(1.0f, -1.0f, 0.0f); // The bottom right corner  
 	glEnd();
 }
 
@@ -36,6 +47,7 @@ void display(void)
 	glLoadIdentity();	// Load the Identity Matrix to reset our drawing locations  
 	glTranslatef(0.0f, 0.0f, -5.0f);
 	renderPrimitive();
+	//renderPrimitive2();
 	glFlush();		// Flush the OpenGL buffers to the window  
 }
 
@@ -73,9 +85,6 @@ int main(int argc, char **argv)
 
 	glutDisplayFunc(display);	// Tell GLUT to use the method "display" for rendering  
 	glutReshapeFunc(reshape);
-
-	glutKeyboardFunc(keyPressd);
-	glutKeyboardUpFunc(keyUp);
 
 	glutMainLoop();		// Enter GLUT's main loop  
 }

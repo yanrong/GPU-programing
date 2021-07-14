@@ -3,7 +3,6 @@
 #include <stdio.h>
 
 int keyStates[256] = {0};
-int keySpecialStates[254] = {0};
 
 void KeyOperations(void)
 {
@@ -13,29 +12,25 @@ void KeyOperations(void)
 	}
 }
 
-void renderPrimitive(void)
-{
-	glPointSize(10.0f);
-	glBegin(GL_QUADS);
-	//glBegin(GL_POINTS);
-	//glBegin(GL_LINE_LOOP);
-	//glBegin(GL_TRIANGLE_FAN);
-	glVertex3f(-1.0f, -1.0f, 0.0f); // The bottom left corner  
-	glVertex3f(-1.0f, 1.0f, 0.0f); // The top left corner  
-	glVertex3f(1.0f, 1.0f, 0.0f); // The top right corner  
-	glVertex3f(1.0f, -1.0f, 0.0f); // The bottom right corner  
-	//glVertex3f(-1.0f, -1.0f, 0.0f);
-	glEnd();
-}
 
 void display(void)
 {
 	KeyOperations();
-	glClearColor(1.0f, 0.0f, 0.0f, 1.0f);	// Clear the background of our window to red  
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);	// Clear the background of our window to red  
 	glClear(GL_COLOR_BUFFER_BIT);	//Clear the colour buffer (more buffers later on)  
 	glLoadIdentity();	// Load the Identity Matrix to reset our drawing locations  
 	glTranslatef(0.0f, 0.0f, -5.0f);
-	renderPrimitive();
+	//glut cube
+	//glutWireCube(2.0f);
+	//glutSolidCube(2.0f);
+	//glutWireSphere(2.0f, 50, 50);
+	//glutSolidShpere(2.0f, 50, 50);
+	//glutWireCone(2.0f, 1.0f, 10, 10);
+	//glutSolidCone(2.0f, 1.0f, 10, 10);
+	//glutWireTorus(0.5f, 1.0f, 50, 50);
+	//glutSolidTorus(0.5f, 1.0f, 50, 50);
+	//glutWireTeapot(1.5f);
+	glutSolidTeapot(1.5f);
 	glFlush();		// Flush the OpenGL buffers to the window  
 }
 
@@ -73,9 +68,6 @@ int main(int argc, char **argv)
 
 	glutDisplayFunc(display);	// Tell GLUT to use the method "display" for rendering  
 	glutReshapeFunc(reshape);
-
-	glutKeyboardFunc(keyPressd);
-	glutKeyboardUpFunc(keyUp);
 
 	glutMainLoop();		// Enter GLUT's main loop  
 }
