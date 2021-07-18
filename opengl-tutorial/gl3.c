@@ -45,7 +45,7 @@ void reshape(int width, int height)
 	glMatrixMode(GL_MODELVIEW);
 }
 
-void keyPressd(unsigned char key, int x, int y)
+void keyPressed(unsigned char key, int x, int y)
 {
 	keyStates[key] = 1;
 }
@@ -76,7 +76,7 @@ int main(int argc, char **argv)
 	glutDisplayFunc(display);	// Tell GLUT to use the method "display" for rendering  
 	glutReshapeFunc(reshape);
 
-	glutKeyboardFunc(keyPressd);
+	glutKeyboardFunc(keyPressed);
 	glutKeyboardUpFunc(keyUp);
 
 	glutSpecialFunc(keySpecial);

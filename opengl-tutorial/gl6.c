@@ -12,7 +12,6 @@ void KeyOperations(void)
 	}
 }
 
-
 void display(void)
 {
 	KeyOperations();
@@ -68,6 +67,9 @@ int main(int argc, char **argv)
 
 	glutDisplayFunc(display);	// Tell GLUT to use the method "display" for rendering  
 	glutReshapeFunc(reshape);
-
+	
+	glutKeyboardFunc(keyPressed); // Tell GLUT to use the method "keyPressed" for key presses  
+	glutKeyboardUpFunc(keyUp); // Tell GLUT to use the method "keyUp" for key up events
+	
 	glutMainLoop();		// Enter GLUT's main loop  
 }
