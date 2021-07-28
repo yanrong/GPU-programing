@@ -15,8 +15,8 @@ GLuint LoadTexture(char * filename, int width, int height)
 
     //The following code will read in our RAW file
     file = fopen(filename, "rb");
-    if (file == NULL) return 0;
-    data = (unsigned char *)malloc(width * height * 3);
+    if(file == NULL) return 0;
+    data =(unsigned char *)malloc(width * height * 3);
     fread(data, width * height * 3, 1, file);
     fclose(file);
 
@@ -28,7 +28,7 @@ GLuint LoadTexture(char * filename, int width, int height)
     //when the texture is near the view, and the MAG filter is whichquality to show when the texture
     //is far from the view.
 
-    //The qualities are (in order from worst to best)
+    //The qualities are(in order from worst to best)
     //GL_NEAREST
     //GL_LINEAR
     //GL_LINEAR_MIPMAP_NEAREST
@@ -55,11 +55,11 @@ void FreeTexture(GLuint texture)
   glDeleteTextures(1, &texture);
 }
 
-void square (void) 
+void square(void) 
 {
     glBindTexture(GL_TEXTURE_2D, texture); //bind our texture to our shape
     glRotatef(angle, 1.0f, 1.0f, 1.0f);
-    glBegin (GL_QUADS);
+    glBegin(GL_QUADS);
     glTexCoord2d(0.0, 0.0); glVertex2d(-1.0, -1.0); //with our vertices we have to assign a texcoord
     glTexCoord2d(1.0, 0.0); glVertex2d(+1.0, -1.0); //so that our texture has some points to draw to
     glTexCoord2d(1.0, 1.0); glVertex2d(+1.0, +1.0);
@@ -82,42 +82,42 @@ void square (void)
 // brick walls.
 }
 
-void display (void) 
+void display(void) 
 {
-    glClearColor (0.0,0.0,0.0,1.0);
-    glClear (GL_COLOR_BUFFER_BIT);
+    glClearColor(0.0,0.0,0.0,1.0);
+    glClear(GL_COLOR_BUFFER_BIT);
     glLoadIdentity();
     glEnable(GL_TEXTURE_2D);
-    gluLookAt (0.0, 0.0, 5.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+    gluLookAt(0.0, 0.0, 5.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
     square();
     glutSwapBuffers();
-    angle ++;
+    angle++;
 }
 
-void reshape (int w, int h) 
+void reshape(int w, int h) 
 {
-    glViewport (0, 0, (GLsizei)w, (GLsizei)h);
-    glMatrixMode (GL_PROJECTION);
-    glLoadIdentity ();
-    gluPerspective (60, (GLfloat)w / (GLfloat)h, 1.0, 100.0);
-    glMatrixMode (GL_MODELVIEW);
+    glViewport(0, 0,(GLsizei)w,(GLsizei)h);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(60,(GLfloat)w /(GLfloat)h, 1.0, 100.0);
+    glMatrixMode(GL_MODELVIEW);
 }
 
-int main (int argc, char **argv) 
+int main(int argc, char **argv) 
 {
-    glutInit (&argc, argv);
-    glutInitDisplayMode (GLUT_DOUBLE);
-    glutInitWindowSize (1024, 1024);
-    glutInitWindowPosition (100, 100);
-    glutCreateWindow ("A basic OpenGL Window");
-    glutDisplayFunc (display);
-    glutIdleFunc (display);
-    glutReshapeFunc (reshape);
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_DOUBLE);
+    glutInitWindowSize(1024, 1024);
+    glutInitWindowPosition(100, 100);
+    glutCreateWindow("A basic OpenGL Window");
+    glutDisplayFunc(display);
+    glutIdleFunc(display);
+    glutReshapeFunc(reshape);
 
     //Load our texture
     texture = LoadTexture("texture.raw", 1024, 1024);
 
-    glutMainLoop ();
+    glutMainLoop();
 
     //Free our texture
     FreeTexture(texture);

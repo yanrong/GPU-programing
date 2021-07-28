@@ -21,7 +21,7 @@ GLuint LoadTexture(const char * filename, int width, int height)
 	glBindTexture(GL_TEXTURE_2D, texture);// bind the texture to it's array
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE); //set texture enviroment parameters
 	
-	//here we are setting what textures to use and when. TheMIN filter is which quality to show
+	//here we are setting what textures to use and when. The MIN filter is which quality to show
 	//when the texture is near the view, and the MAG filter is which quality to show when the texture
 	//is far from the view.
 	//The qualities are (in order from worst to best)
@@ -64,14 +64,14 @@ void display (void)
 	glClear(GL_COLOR_BUFFER_BIT);
 	glLoadIdentity();
 	gluLookAt(0.0, 0.0, 5.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
-	texture = LoadTexture("texture.raw", 256, 256 ); //loadthe texture
-	glEnable( GL_TEXTURE_2D ); //enable 2D texturing
+	texture = LoadTexture("texture.raw", 256, 256); //loadthe texture
+	glEnable(GL_TEXTURE_2D); //enable 2D texturing
 	glEnable(GL_TEXTURE_GEN_S); //enable texture coordinate generation
 	glEnable(GL_TEXTURE_GEN_T);
 	cube();
-	FreeTexture( texture );
+	FreeTexture(texture);
 	glutSwapBuffers();
-	angle ++;
+	angle++;
 }
 
 void reshape (int w, int h) 
