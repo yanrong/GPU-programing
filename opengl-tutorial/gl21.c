@@ -24,7 +24,8 @@ void init(void)
 	createcube(); //call the command to create the cube
 }
 
-void display(void) {
+void display(void)
+{
     glClearColor(0.0,0.0,0.0,1.0); //clear the screen to black
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	//clear the color buffer and the depth buffer
@@ -34,7 +35,8 @@ void display(void) {
     glutSwapBuffers(); //swap the buffers
 }
 
-void reshape(int w, int h) {
+void reshape(int w, int h)
+{
     glViewport(0, 0,(GLsizei)w,(GLsizei)h); //set the viewport to the current window specifications
     glMatrixMode(GL_PROJECTION); //set the matrix to projection
     glLoadIdentity();
@@ -42,7 +44,8 @@ void reshape(int w, int h) {
     glMatrixMode(GL_MODELVIEW); //set the matrix back to model
 }
 
-void keyboard(unsigned char key, int x, int y) {
+void keyboard(unsigned char key, int x, int y)
+{
     if(key==27)
     {
     	glutLeaveGameMode(); //set the resolution how it was
@@ -50,7 +53,8 @@ void keyboard(unsigned char key, int x, int y) {
     }
 }
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_DEPTH); //set the display to Double buffer, with depth
     glutGameModeString("1024x768:32@75"); //the settings for fullscreen mode
