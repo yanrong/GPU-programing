@@ -118,7 +118,7 @@ int main(int arc, char *argv[])
 		{
 			for(int x = 0; x < ARRAY_SIZE_X; x++)
 			{
-				printf("CT: %2u BKX: %1u BKY: %1u TID: %2u YTID: %2u XTID %2u GDX: %1u BDX: %1u GDY %1u BDY %1u\n",
+				printf("CT: %2u BKX: %1u BKY: %1u TID: %2u YTID: %2u XTID: %2u GDX: %1u BDX: %1u GDY %1u BDY %1u\n",
 					cpu_calc_thread[y][x], cpu_block_x[y][x], cpu_block_y[y][x], cpu_thread[y][x],
 					cpu_ythread[y][x], cpu_xthread[y][x], cpu_grid_dimx[y][x], cpu_block_dimx[y][x],
 					cpu_grid_dimy[y][x], cpu_block_dimy[y][x]);
