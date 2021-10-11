@@ -1,0 +1,1 @@
+GLuint loadShader(const char *vertex_fpath, const char *fragment_fpath);

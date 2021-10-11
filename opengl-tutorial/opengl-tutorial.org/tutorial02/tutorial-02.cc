@@ -5,6 +5,7 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 
+#include "../common/loadShader.hpp"
 using namespace glm;
 
 static const GLfloat g_vertex_buffer_data[] = {
@@ -19,7 +20,6 @@ int main(int argc, char* argv[])
 	GLuint vertexBuffer;
 	GLuint vertextArrayID;
 
-	glewExperimental = true;
 	if(!glfwInit()){
 		fprintf(stderr, "Failed to initialize GLFW\n");
 		return -1;
@@ -38,10 +38,12 @@ int main(int argc, char* argv[])
 		return -1;
 	}
 
-	glfwMakeContextCurrent(window); //Initialize GLFW
-	glewExperimental = true;
+	glfwMakeContextCurrent(window);
+	//Initialize GLEW
+	glewExperimental = true; // Needed for core profile
 	if(glewInit()  != GLEW_OK){
 		fprintf(stderr, "Failed to intialize GLEW\n");
+		glfwTerminate();
 		return 0;
 	}
 	//Ensure we can capture the esacap key being pressed below
@@ -58,26 +60,34 @@ int main(int argc, char* argv[])
 	glGenVertexArrays(1, &vertextArrayID);
 	glBindVertexArray(vertextArrayID);
 
+	//Create and Compile our GLSL program from the shaders
+	GLuint programID = loadShader("./shader/vertextShader.vert", "./shader/fragmentShader.frag");
+
 	do{
 		//clear the screen
 		glClear(GL_COLOR_BUFFER_BIT);
 
+		glUseProgram(programID);
+
 		glEnableVertexAttribArray(0);
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
 		//attribute size, type, normalized, stride, array buffer offset
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		/*arguments index, size, type, stride, array buffer offset*/
+		glVertexAttribPointer(0, //attribute 0. No particular reason for 0, but must match the layout in the shader
+		3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
+		glDrawArrays(GL_TRIANGLES, 0, 3); // Starting from vertex 0; 3 vertices total
 		glDisableVertexAttribArray(0);
 
 		//swap buffers
 		glfwSwapBuffers(window);
 		glfwPollEvents();
-	}while(glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS 
+	} while(glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS
 		&& glfwWindowShouldClose(window) == 0);
 	
 	//clean VBO
 	glDeleteBuffers(1, &vertexBuffer);
 	glDeleteVertexArrays(1, &vertextArrayID);
+	glDeleteProgram(programID);
 	// Close OpenGL window and terminate GLFW
 	glfwTerminate();
 	return 0;

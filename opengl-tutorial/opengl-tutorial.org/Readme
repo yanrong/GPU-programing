@@ -1,0 +1,1 @@
+manual compile with $g++ tutorial-02.cc ../common/loadShader.cc -lGL -lGLEW -lglfw
