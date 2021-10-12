@@ -3,7 +3,7 @@
 //Output data
 out vec3 color;
 
-void main
+void main()
 {
     //Out color = red
     color = vec3(1, 0, 0);
