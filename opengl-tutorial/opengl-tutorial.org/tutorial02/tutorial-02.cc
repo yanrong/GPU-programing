@@ -31,7 +31,7 @@ int main(int argc, char* argv[])
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // We don't want the old OpenGL 
 
-	window = glfwCreateWindow(800, 600, "Tutorial 01", NULL, NULL);
+	window = glfwCreateWindow(800, 600, "Tutorial 02", NULL, NULL);
 	if(window == NULL){
 		fprintf(stderr, "Failed to openg GLFW window, If you have an Intel GPU,they are not 3.3 compatible.Try the 2.1 version of the tutorials.\n");
 		glfwTerminate();
