@@ -1,2 +1,2 @@
 #include <GL/gl.h>
-GLuint loadbBMP(const char *path);
+GLuint loadBMP(const char *path);
