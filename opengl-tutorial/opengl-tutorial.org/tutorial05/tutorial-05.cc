@@ -158,7 +158,10 @@ int main(int argc, char* argv[])
     glm::mat4 mvp = projection * view * model; //Remeber the sequence
 
     //Load the texture using any two methods
-    GLuint texture = loadBMP("uvtemplate.bmp");
+	// Normally load the texture data from BMP file
+    // GLuint texture = loadBMP("uvtemplate.bmp");
+	// Second, we load the data from DDS file
+	GLuint texture = loadDDS("uvtemplate.DDS");
 
     //Get a handle for our "textureSampler" uniform
     GLuint textureID = glGetUniformLocation(programID, "textureSampler");
