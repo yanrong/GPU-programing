@@ -122,8 +122,7 @@ int main(int argc, char *argv[])
     // Open a window and create its OpenGL context
     window = glfwCreateWindow(1024, 600, "Tutorial 06 - KeyBoard and Mouse", NULL, NULL);
     if (window == NULL) {
-        fprintf(stderr, "Failed to openg GLFW, If you have an Intel GPU, they are not 3.3 compatible.
-        Try the 2.1 version of the tutorials.\n");
+        fprintf(stderr, "Failed to openg GLFW\n");
         getchar();
         glfwTerminate();
         return -1;
@@ -155,13 +154,13 @@ int main(int argc, char *argv[])
     glEnable(GL_CULL_FACE);
 
     // Create vertext array for hold the predefined data
-    glGenVertexArray(1, &vertexArrayID);
+    glGenVertexArrays(1, &vertexArrayID);
     glBindVertexArray(vertexArrayID);
     /*************************************************/
     // Create vertext buffer and UV buffer
     glGenBuffers(1, &vertexBuffer);
     // Associate it with the OpenGL
-    glBindBUffer(GL_ARRAY_BUFFER, vertexBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
     // Fill it with the data
     glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
     /*************************************************/
@@ -176,7 +175,7 @@ int main(int argc, char *argv[])
     // Load the texture
     texture = loadDDS("uvtemplate.DDS");
     // Get a handle for our texture uniform
-    textureID = glGetUniformLocation(programID. "texture");
+    textureID = glGetUniformLocation(programID, "textureSampler");
 
     do {
         // Clear the screen
@@ -185,16 +184,16 @@ int main(int argc, char *argv[])
         glUseProgram(programID);
 
         // Compute the MVP matrix from the keybaord and mouse
-        computeMatrixFromInputs();
+        computeMatricesFromInputs(window);
         glm::mat4 projectionMatrix = getProjectionMatrix();
-        glm::mat4 viewMatrix = getViewMatrix;
-        glm::mat4 modelMatrix = glm::mat4(1, 0);
+        glm::mat4 viewMatrix = getViewMatrix();
+        glm::mat4 modelMatrix = glm::mat4(1.0);
         glm::mat4 mvp = projectionMatrix * viewMatrix *modelMatrix;
 
         // Send out transformation to the current bound shade,in the "MVP" uniform
         glUniformMatrix4fv(matrixID, 1, GL_FALSE, &mvp[0][0]);
         //Bind out texture in Texture Unit 0
-        glActiveTextrue(GL_TEXTURE);
+        glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture);
         // Set our "textureSampleer" sampler to use Texture unit 0
         glUniform1i(textureID, 0);
