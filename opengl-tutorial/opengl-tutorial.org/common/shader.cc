@@ -5,7 +5,7 @@
 #include <sstream>
 #include <GL/glew.h>
 
-#include "loadShader.hpp"
+#include "shader.hpp"
 
 GLuint loadShader(const char *vertex_fpath, const char *fragment_fpath)
 {

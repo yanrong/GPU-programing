@@ -5,7 +5,7 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 
-#include "../common/loadShader.hpp"
+#include "../common/shader.hpp"
 using namespace glm;
 
 static const GLfloat g_vertex_buffer_data[] = {

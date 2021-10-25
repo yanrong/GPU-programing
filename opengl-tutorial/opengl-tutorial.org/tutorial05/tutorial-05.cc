@@ -6,7 +6,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "../common/texture.hpp"
-#include "../common/loadShader.hpp"
+#include "../common/shader.hpp"
 using namespace glm;
 
 // Our vertices. Three consecutive floats give a 3D vertex; Three consecutive vertices give a triangle.
