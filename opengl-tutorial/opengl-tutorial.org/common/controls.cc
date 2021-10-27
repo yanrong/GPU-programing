@@ -59,7 +59,7 @@ void computeMatricesFromInputs(GLFWwindow *window)
     }
     //Move backward
     if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
-        position += direction * deltaTime * speed;
+        position -= direction * deltaTime * speed;
     }
     //Strafe right
     if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
@@ -67,7 +67,7 @@ void computeMatricesFromInputs(GLFWwindow *window)
     }
     //Strafe left
     if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
-        position += right * deltaTime * speed;
+        position -= right * deltaTime * speed;
     }
     /* - 5 * glfwGetMouseWheel(); // Now GLFW 3 requires setting up a callback for this.
     * It's a bit too complicated for this beginner's tutorial, so it's disabled instead.
