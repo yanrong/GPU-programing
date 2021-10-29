@@ -23,6 +23,7 @@ static float mouseSpeed = 0.005f;
 void computeMatricesFromInputs(GLFWwindow *window)
 {
     double xpos, ypos;
+    int width, height;
     float FoV;
     // glfwGetTime is call only once, the fist time this function is called
     static double lastTime = glfwGetTime();
@@ -32,13 +33,14 @@ void computeMatricesFromInputs(GLFWwindow *window)
 
     // Get Mouse position
     glfwGetCursorPos(window, &xpos, &ypos);
+    glfwGetWindowSize(window, &width, &height);
     // Reset moust position for the next frame
-    glfwSetCursorPos(window, 1024 / 2, 768 / 2);
+    glfwSetCursorPos(window, width / 2, height / 2);
     // Compute new orientation
-    horizontalAngle += mouseSpeed * float(1024 / 2 - xpos);
-    verticalAngle   += mouseSpeed * float(768 / 2 - ypos);
+    horizontalAngle += mouseSpeed * float(width / 2 - xpos);
+    verticalAngle   += mouseSpeed * float(height / 2 - ypos);
 
-    // Direction : Spherical coordinates to  Cartesian coordinate conversion
+    // Direction : Spherical coordinates to Cartesian coordinate conversion
     glm::vec3 direction(
         cos(verticalAngle) * sin(horizontalAngle),
         sin(verticalAngle),

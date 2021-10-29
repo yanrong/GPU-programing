@@ -1,4 +1,5 @@
-#include <GL/gl.h>
+#ifndef TEXTURE_HPP
+#define TEXTURE_HPP
 //Build texture from BMP file
 GLuint loadBMP(const char *path);
 
@@ -9,3 +10,4 @@ GLuint loadBMP(const char *path);
 
 //Load a .DDS file use GLFW's own loader
 GLuint loadDDS(const char *path);
+#endif

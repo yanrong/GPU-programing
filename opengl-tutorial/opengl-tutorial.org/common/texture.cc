@@ -132,7 +132,7 @@ GLuint loadDDS(const char *path)
 
     char filecode[4];
     fread(filecode, 1, 4, fp);
-    if(strncmp(filecode, "DDS", 4) != 0){
+    if(strncmp(filecode, "DDS ", 4) != 0){
         fclose(fp);
         return 0;
     }
