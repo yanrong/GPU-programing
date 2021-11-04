@@ -6,11 +6,11 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include <common/shader.hpp>
-#include <common/texture.hpp>
-#include <common/controls.hpp>
-#include <common/objloader.hpp>
-#include <common/vboindexer.hpp>
+#include "../common/shader.hpp"
+#include "../common/texture.hpp"
+#include "../common/controls.hpp"
+#include "../common/objloader.hpp"
+#include "../common/vboindexer.hpp"
 
 using namespace glm;
 
@@ -18,8 +18,10 @@ int main(int argc, char* argv[])
 {
     GLFWwindow* window;
     GLuint programID, matrixID, vertexArrayID;
+    GLuint viewMatrixID, modelMatrixID;
     GLuint texture, textureID;
-    GLuint vertexBuffer, uvBuffer;
+    GLuint vertexBuffer, uvBuffer, normalBuffer;
+    GLuint lightID;
 
     //Initalise GLFW
     if (!glfwInit()) {
@@ -69,9 +71,13 @@ int main(int argc, char* argv[])
     glEnable(GL_CULL_FACE);
 
     //Create an compile our GLSL program from the shaders
-    programID = loadShader("./shader/transform.vert", "./shader/texture.frag");
+    programID = loadShader("./shader/standardShading.vert", "./shader/standardShading.frag");
+
     //Get a handle for our mvp uniform
-    matrixID = glGetUniformLocation(programID, "mvp");
+    matrixID = glGetUniformLocation(programID, "MVP");
+    viewMatrixID = glGetUniformLocation(programID, "V");
+    modelMatrixID = glGetUniformLocation(programID, "M");
+
     //Load the Texture
     texture = loadDDS("uvmap.DDS");
     //Get a handle for out "textureSampler" uniform
@@ -81,7 +87,7 @@ int main(int argc, char* argv[])
     std::vector<glm::vec3> vertices;
     std::vector<glm::vec2> uvs;
     std::vector<glm::vec3> normals; // Won't be used at the moment.
-    bool res = loadOBJ("cube.obj", vertices, uvs, normals);
+    bool res = loadOBJ("suzanne.obj", vertices, uvs, normals);
 
     //Generate the vertexs & buffers
     glGenVertexArrays(1, &vertexArrayID);
@@ -94,6 +100,13 @@ int main(int argc, char* argv[])
     glGenBuffers(1, &uvBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, uvBuffer);
     glBufferData(GL_ARRAY_BUFFER, uvs.size() * sizeof(glm::vec2),  &uvs[0], GL_STATIC_DRAW);
+
+    glGenBuffers(1, &normalBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, normalBuffer);
+    glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(glm::vec3), &normals[0], GL_STATIC_DRAW);
+
+    glUseProgram(programID);
+    lightID = glGetUniformLocation(programID, "lightPostion");
 
     do {
         //Clear the screen
@@ -110,6 +123,12 @@ int main(int argc, char* argv[])
 
         //Send out transformation to the current bound shader in the "mvp" uniform
         glUniformMatrix4fv(matrixID, 1, GL_FALSE, &mvp[0][0]);
+        glUniformMatrix4fv(modelMatrixID, 1, GL_FALSE, &modelMatrix[0][0]);
+        glUniformMatrix4fv(viewMatrixID, 1, GL_FALSE, &viewMatrix[0][0]);
+
+        glm::vec3 lightPos = glm::vec3(4, 4, 4);
+        glUniform3f(lightID, lightPos.x, lightPos.y, lightPos.z);
+
 
         //Bind our texture in Texture Unit 0
         glActiveTexture(GL_TEXTURE0);
@@ -141,10 +160,23 @@ int main(int argc, char* argv[])
 			(void*)0                          // array buffer offset
 		);
 
+        glEnableVertexAttribArray(2);
+        glBindBuffer(GL_ARRAY_BUFFER, normalBuffer);
+        glVertexAttribPointer(
+            2,
+            3,
+            GL_FLOAT,
+            GL_FALSE,
+            0,
+            (void*)0
+        );
+
         //Draw the tirangle
         glDrawArrays(GL_TRIANGLES, 0 , vertices.size());
         glDisableVertexAttribArray(0);
         glDisableVertexAttribArray(1);
+        glDisableVertexAttribArray(2);
+
         //Swap buffer for smooth display
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -155,6 +187,7 @@ int main(int argc, char* argv[])
     //Clean VBO and shader
     glDeleteBuffers(1, &vertexBuffer);
     glDeleteBuffers(1, &uvBuffer);
+    glDeleteBuffers(1, &normalBuffer);
     glDeleteProgram(programID);
     glDeleteTextures(1, &texture);
     glDeleteVertexArrays(1, &vertexArrayID);

@@ -15,4 +15,4 @@ $(TARGET): $(OBJ)
 .PHONY: clean
 
 clean:
-	rm -rf $(TARGET) *.o
+	rm -rf $(TARGET) *.o $(INCDIR)/*.o
