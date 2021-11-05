@@ -1,16 +1,19 @@
-INCDIR=../common
-CC=gcc
-CXX=g++
-LIBS=-lGL -lGLEW -lglfw -lassimp
-CFLAGS= -I$(INCDIR)
-CCSOURCE = 	$(wildcard $(INCDIR)/*.cc) \
+CC := gcc
+CXX := g++
+LIBS := -lGL -lGLEW -lglfw -lassimp
+
+PWD := $(shell pwd)
+INCDIR := $(PWD)/../common
+
+CXXFLAGS := -I$(PWD)/.. -I$(INCDIR)
+CCSOURCE := $(wildcard $(INCDIR)/*.cc) \
 			$(wildcard ./*.cc)
 
-TARGET = tutorial08
+TARGET := tutorial08
 
-OBJ = $(CCSOURCE:.cc=.o)
-$(TARGET): $(OBJ)
-	$(CXX) -o $@ $^ $(CFLAGS) $(LIBS)
+OBJS := $(CCSOURCE:.cc=.o)
+$(TARGET): $(OBJS)
+	$(CXX) -o $@ $^ $(CXXFLAGS) $(LIBS)
 
 .PHONY: clean
 

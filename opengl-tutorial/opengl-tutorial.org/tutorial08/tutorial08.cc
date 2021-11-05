@@ -6,11 +6,11 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "../common/shader.hpp"
-#include "../common/texture.hpp"
-#include "../common/controls.hpp"
-#include "../common/objloader.hpp"
-#include "../common/vboindexer.hpp"
+#include "common/shader.hpp"
+#include "common/texture.hpp"
+#include "common/controls.hpp"
+#include "common/objloader.hpp"
+#include "common/vboindexer.hpp"
 
 using namespace glm;
 
