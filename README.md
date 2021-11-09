@@ -1,1 +1,1 @@
-# learn-programing
+# GPU programing demo
