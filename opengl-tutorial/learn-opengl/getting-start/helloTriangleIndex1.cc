@@ -106,7 +106,6 @@ int main(int argc, char *argv[])
 
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
-    glGenBuffers(1, &EBO);
     //bin the Vertex Array Object first, then bind and set vertex buffers(s)
     //and the configure vertex attributes
     glBindVertexArray(VAO);
@@ -141,7 +140,7 @@ int main(int argc, char *argv[])
         //have a single VAO there's no need to bind it every time,
         //but we'll do so to keep things a bit more organized
         glBindVertexArray(VAO);
-        glDrawArrays(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
         //glBindVertexArray(0); // no need to unbind it every time
 
         //glfw swap buffer and poll IO events(keys press/release mouse move etc)

@@ -155,9 +155,8 @@ int main(int argc, char *argv[])
         glfwPollEvents();
     }
     //Optional de-allocate all reources once they've outlived their purpose
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
-    glDeleteBuffers(1, &EBO);
+    glDeleteVertexArrays(2, VAOs);
+    glDeleteBuffers(2, VBOs);
     glDeleteProgram(shaderProgram);
 
     //glfw terminate, cleaning all previous allocated GLFW resource

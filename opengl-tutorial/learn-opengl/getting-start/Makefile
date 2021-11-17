@@ -15,10 +15,10 @@ COBJS = $(CSOURCE:.c=.o)
 all: $(CCEXECUTABLE)
 
 $(COBJS) : $(CSOURCE)
-	$(CC) -c -o $@ $< $(LDFLAGS) $(CFLAGS)
+	$(CC) -c -o $@ $@.c $(LDFLAGS) $(CFLAGS)
 
 $(CCEXECUTABLE): $(CCSOURCE)
-	$(CXX) -o $@ $< $(COBJS) $(CXXFLAGS) $(LDFLAGS)
+	$(CXX) -o $@ $@.cc $(COBJS) $(CXXFLAGS) $(LDFLAGS)
 
 .PHONY: clean
 
