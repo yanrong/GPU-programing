@@ -1,11 +1,10 @@
 PWD := $(shell pwd)
 CC := gcc
 CXX := g++
-LIBS := -lGL -lGLEW -lglfw -ldl
 
 CFLAGS :=
 CXXFLAGS :=
-LDFLAGS :=
+LDFLAGS := -lGL -lGLEW -lglfw -ldl
 
 COMMON := $(PWD)/../common
 CSOURCE := $(wildcard $(COMMON)/*.c)
@@ -18,8 +17,8 @@ all: $(CCEXECUTABLE)
 $(COBJS) : $(CSOURCE)
 	$(CC) -c -o $@ $< $(LDFLAGS) $(CFLAGS)
 
-$(CCEXECUTABLE): $(CCSOURCE) $(COBJS)
-	$(CXX) -o $@ $^ $(CXXFLAGS) $(LIBS)
+$(CCEXECUTABLE): $(CCSOURCE)
+	$(CXX) -o $@ $< $(COBJS) $(CXXFLAGS) $(LDFLAGS)
 
 .PHONY: clean
 

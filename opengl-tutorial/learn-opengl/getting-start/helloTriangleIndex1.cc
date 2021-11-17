@@ -21,11 +21,17 @@ const char *fragmentShaderSource = "#version 330 core\n"
     "fragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
     "}\n";
 
-//set up vertex data and configuration vertex attributes
+// add a new set of vertices to form a second triangle(a total of 6 vertices);
+//the vertex attribute configuration remains the same (still one 3-float position vector per vertex)
 float vertices[] = {
-    -0.5f, -0.5f, 0.0f, // left
-    0.5f, -0.5f, 0.0f, // right
-    0.0f,  0.5f, 0.0f  // top
+    // first triangle
+    -0.9f, -0.5f, 0.0f, // left
+    -0.0f, -0.5f, 0.0f, // right
+    -0.45f, 0.5f, 0.0f, // top
+                        // second triangle
+    0.0f, -0.5f, 0.0f,  // left
+    0.9f, -0.5f, 0.0f,  // right
+    0.45f, 0.5f, 0.0f   // top
 };
 
 int main(int argc, char *argv[])
@@ -100,6 +106,7 @@ int main(int argc, char *argv[])
 
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
+    glGenBuffers(1, &EBO);
     //bin the Vertex Array Object first, then bind and set vertex buffers(s)
     //and the configure vertex attributes
     glBindVertexArray(VAO);
@@ -112,7 +119,7 @@ int main(int argc, char *argv[])
 
     //note that this is allowed, the call the glVertexAttribPointer register VBO as
     //the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
-    glBindBuffer(GL_ARRAY_BUFFER ,0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
     //You can unbind the VAO afterwards so other VAO calls won't accidentally modify this
     //VAO, but this rarely happens, modifying other VAOs requires a call to glBindVertexArray
     //Always so we generally don't unbind VAOs(nor VBOs) when it's not directly necessary
@@ -134,7 +141,7 @@ int main(int argc, char *argv[])
         //have a single VAO there's no need to bind it every time,
         //but we'll do so to keep things a bit more organized
         glBindVertexArray(VAO);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glDrawArrays(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         //glBindVertexArray(0); // no need to unbind it every time
 
         //glfw swap buffer and poll IO events(keys press/release mouse move etc)
