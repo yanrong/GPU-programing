@@ -10,12 +10,12 @@ COMMON := $(PWD)/../common
 CSOURCE := $(wildcard $(COMMON)/*.c)
 CCSOURCE := $(wildcard *.cc)
 CCEXECUTABLE := $(CCSOURCE:.cc=)
-COBJS = $(CSOURCE:.c=.o)
+COBJS := $(CSOURCE:.c=.o)
 
-all: $(CCEXECUTABLE)
+all: $(COBJS) $(CCEXECUTABLE)
 
 $(COBJS) : $(CSOURCE)
-	$(CC) -c -o $@ $@.c $(LDFLAGS) $(CFLAGS)
+	$(CC) -c -o $@ $< $(LDFLAGS) $(CFLAGS)
 
 $(CCEXECUTABLE): $(CCSOURCE)
 	$(CXX) -o $@ $@.cc $(COBJS) $(CXXFLAGS) $(LDFLAGS)
