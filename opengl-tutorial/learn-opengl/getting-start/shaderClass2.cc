@@ -53,8 +53,7 @@ int main(int argc, char *argv[])
     }
 
     //build and compile our shader program
-    //Shader ourShader("./shaders/3.3.shader.vs", "./shaders/3.3.shader.fs");
-    Shader ourShader("./shaders/3.6.shader.vs", "./shaders/3.6.shader.fs");
+    Shader ourShader("./shaders/3.5.shader.vs", "./shaders/3.3.shader.fs");
 
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
@@ -84,6 +83,9 @@ int main(int argc, char *argv[])
         glClear(GL_COLOR_BUFFER_BIT);
 
         ourShader.use();
+        //set a offset for X position
+        ourShader.setFloat("xOffset", 0.5f);
+
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0 , 3);
 
