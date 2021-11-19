@@ -1,1 +1,1 @@
-# GPU programing demo
+# GPU programming demo
