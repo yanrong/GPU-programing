@@ -2,20 +2,17 @@
 #define FILESYSTEM_H
 
 #include <string>
-#include <cstdlib>
-#include "root_directory.h"
+#include <iostream>
+#include <unistd.h>
+//Open the STB on
+
 
 class fileSystem{
-private:
-    typedef std::string (*Builder) (const std::string &path);
-
 public:
-    static std::string getPath(const std::string& path);
+    static std::string getResource(const char *path);
 
 private:
-    static std::string const & getRoot();
-    static Builder getPathBuilder();
-    static std::string getPathRelativeRoot(const std::string &path);
-    static std::string getPathRelativeBinary(const std::string &path);
+    static std::string getRelativePath(void);
+    static std::string getCurrentPath(void);
 };
 #endif

@@ -1,33 +1,30 @@
 #include "fileSystem.hpp"
 
-static std::string fileSystem::getPath(const std::string& path)
+std::string fileSystem::getCurrentPath()
 {
-    static std::string(*pathBuilder)(std::string const &) = getPathBuilder();
-    return (*pathBuilder)(path);
+    char buf[512];
+    std::string currentPath;
+    if(getcwd(buf, 512) != NULL) {
+        currentPath = buf;
+    } else {
+        currentPath = "";
+    }
+    return currentPath;
 }
 
-static std::string const & fileSystem::getRoot()
+std::string fileSystem::getRelativePath()
 {
-    static char const * envRoot = getenv("LOGL_ROOT_PATH");
-    static char const * givenRoot = (envRoot != nullptr ? envRoot : logl_root);
-    static std::string root = (givenRoot != nullptr ? givenRoot : "");
-    return root;
+    std::string tmp = getCurrentPath();
+    if (tmp == "") {
+        std::cout <<  "get the current path invalid" << std::endl;
+        return "";
+    }
+    //get the relative path in which current projection top directory
+    return tmp + "/../";
 }
 
-static Builder fileSystem::getPathBuilder()
+std::string fileSystem::getResource(const char *path)
 {
-    if (getRoot != "")
-        return &fileSystem::getPathRelativeRoot;
-    else
-        return &fileSystem::getPathRelativeBinary;
-}
-
-static std::string fileSystem::getPathRelativeRoot(const std::string &path)
-{
-    return getRoot() + std::string("/") + path;
-}
-
-static std::string fileSystem::getPathRelativeBinary(const std::string &path)
-{
-    return "../../../" + path;
+    //the all project resource file in the [resource] sub-directory in top project directory
+    return getRelativePath() + path;
 }

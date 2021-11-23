@@ -1,3 +1,5 @@
+#define STB_IMAGE_IMPLEMENTATION
+
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <stb/stb_image.h>
@@ -53,7 +55,7 @@ int main(int argc, char *argv[])
     }
 
     glfwMakeContextCurrent(window);
-    glfwSetFramebufferSizeCallback(framebufferSizeCallback);
+    glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
 
     //glad load OpenGL fuction pointers
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
@@ -64,7 +66,7 @@ int main(int argc, char *argv[])
     //build and compile our shader program
     Shader ourShader("shaders/4.1.textures.vs", "shaders/4.1.textures.fs");
 
-    glGenVertexArraya(1, &VAO);
+    glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
     glGenBuffers(1, &EBO);
 
@@ -75,18 +77,18 @@ int main(int argc, char *argv[])
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     //postion attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void *)0);
     glEnableVertexAttribArray(0);
     //color attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(3 * sizeof(GLfloat)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void *)(3 * sizeof(GLfloat)));
     glEnableVertexAttribArray(1);
     //texture coordinate attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(6 * sizeof(GLfloat)));
-    glEnableVertexAttribArray(3);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void *)(6 * sizeof(GLfloat)));
+    glEnableVertexAttribArray(2);
 
     //load and create texture
     glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_2D, texutre);
+    glBindTexture(GL_TEXTURE_2D, texture);
     //set the texture wrapping parameters,
     // set texture wrapping to GL_REPEAT (default wrapping method), in two dimension
     //set S and T, (tree dimension also need R)
@@ -96,10 +98,11 @@ int main(int argc, char *argv[])
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
+    std::cout << "get resource path " << fileSystem::getResource("resources/container.jpg") << std::endl;
     //load the image, create texture and generate mipmaps
-    data = stbi_load(fileSystem::getPath("resources/container.jpg"), &width, &height, &nrChannels, 0);
+    data = stbi_load(fileSystem::getResource("resources/container.jpg").c_str(), &width, &height, &nrChannels, 0);
     if (data != nullptr) {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_REPEAT, width, height, 0, GL_RGB, GL_UNSIGNED_INT, data);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_INT, data);
         glGenerateMipmap(GL_TEXTURE_2D);
     } else {
         std::cout << "Failed to load texture" << std::endl;
@@ -107,13 +110,13 @@ int main(int argc, char *argv[])
     stbi_image_free(data);
 
     //render loop
-    while (!glfwWindowShouldClose(widnow)) {
+    while (!glfwWindowShouldClose(window)) {
         //process input
-        processInput();
+        processInput(window);
 
         //render
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear();
+        glClear(GL_COLOR_BUFFER_BIT);
 
         //bind Texture
         glBindTexture(GL_TEXTURE_2D, texture);
@@ -148,3 +151,4 @@ void framebufferSizeCallback(GLFWwindow* window, int width, int height)
     // make sure the viewport matches the new window dimensions; note that width and
     // height will be significantly larger than specified on retina displays.
     glViewport(0, 0, width, height);
+}
