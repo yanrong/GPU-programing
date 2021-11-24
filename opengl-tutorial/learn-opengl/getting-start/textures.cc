@@ -1,9 +1,9 @@
-#define STB_IMAGE_IMPLEMENTATION
-
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include <stb/stb_image.h>
 #include <iostream>
+//Open STB ON
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb/stb_image.h>
 
 #include "common/fileSystem.hpp"
 #include "common/shader_s.hpp"
@@ -12,8 +12,8 @@ static void framebufferSizeCallback(GLFWwindow *window, int width, int height);
 static void processInput(GLFWwindow *window);
 
 //settings
-const unsigned int SRC_WIDTH = 800;
-const unsigned int SRC_HEIGHT = 600;
+const unsigned int SCR_WIDTH = 800;
+const unsigned int SCR_HEIGHT = 600;
 // set up vertex data (and buffer(s)) and configure vertex attributes
 GLfloat vertices[] = {
     // positions          // colors           // texture coords
@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
     GLFWwindow *window;
     GLuint VAO, VBO, EBO;
     GLuint texture;
-    unsigned char *data = nullptr;
+    unsigned char *data;
     int width, height, nrChannels;
 
     if (glfwInit() == GLFW_FALSE) {
@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
-    window = glfwCreateWindow(SRC_WIDTH, SRC_HEIGHT, "Lear OpenGL", NULL, NULL);
+    window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Lear OpenGL", NULL, NULL);
     if (window == NULL) {
         std::cout << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
@@ -98,11 +98,11 @@ int main(int argc, char *argv[])
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    std::cout << "get resource path " << fileSystem::getResource("resources/container.jpg") << std::endl;
+    //std::cout << "get resource path " << fileSystem::getResource("resources/textures/container.jpg") << std::endl;
     //load the image, create texture and generate mipmaps
-    data = stbi_load(fileSystem::getResource("resources/container.jpg").c_str(), &width, &height, &nrChannels, 0);
+    data = stbi_load(fileSystem::getResource("resources/textures/container.jpg").c_str(), &width, &height, &nrChannels, 0);
     if (data != nullptr) {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_INT, data);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
     } else {
         std::cout << "Failed to load texture" << std::endl;

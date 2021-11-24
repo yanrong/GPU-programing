@@ -4,8 +4,6 @@
 #include <string>
 #include <iostream>
 #include <unistd.h>
-//Open the STB on
-
 
 class fileSystem{
 public:
