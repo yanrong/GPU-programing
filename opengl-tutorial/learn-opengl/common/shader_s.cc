@@ -1,4 +1,3 @@
-#include <glad/glad.h>
 #include <string>
 #include <fstream>
 #include <sstream>
@@ -81,6 +80,51 @@ void Shader::setInt(const std::string &name, int value) const
 void Shader::setFloat(const std::string &name, float value) const
 {
     glUniform1f(glGetUniformLocation(Id, name.c_str()), value);
+}
+
+void Shader::setVec2(const std::string &name, const glm::vec2 &vector2) const
+{
+    glUniform2fv(glGetUniformLocation(Id, name.c_str()), 1, &vector2[0]);
+}
+
+void Shader::setVec2(const std::string &name, float x, float y) const
+{
+    glUniform2f(glGetUniformLocation(Id, name.c_str()), x, y);
+}
+
+void Shader::setVec3(const std::string &name, const glm::vec3 &vector3) const
+{
+    glUniform3fv(glGetUniformLocation(Id, name.c_str()), 1, &vector3[0]);
+}
+
+void Shader::setVec3(const std::string &name, float x, float y, float z) const
+{
+    glUniform3f(glGetUniformLocation(Id, name.c_str()), x, y, z);
+}
+
+void Shader::setVec4(const std::string &name, const glm::vec4 &vector4) const
+{
+    glUniform4fv(glGetUniformLocation(Id, name.c_str()), 1, &vector4[0]);
+}
+
+void Shader::setVec4(const std::string &name, float x, float y, float z, float w) const
+{
+    glUniform4f(glGetUniformLocation(Id, name.c_str()), x, y, z, w);
+}
+
+void Shader::setMat2(const std::string &name, const glm::mat2 &matrix2) const
+{
+    glUniformMatrix2fv(glGetUniformLocation(Id, name.c_str()), 1, GL_FALSE, &matrix2[0][0]);
+}
+
+void Shader::setMat3(const std::string &name, const glm::mat3 &matrix3) const
+{
+    glUniformMatrix3fv(glGetUniformLocation(Id, name.c_str()), 1, GL_FALSE, &matrix3[0][0]);
+}
+
+void Shader::setMat4(const std::string &name, const glm::mat4 &matrix4) const
+{
+    glUniformMatrix4fv(glGetUniformLocation(Id, name.c_str()), 1, GL_FALSE, &matrix4[0][0]);
 }
 
 //utility function for checking shader compilation status

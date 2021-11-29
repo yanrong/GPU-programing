@@ -2,9 +2,9 @@ PWD := $(shell pwd)
 CC := gcc
 CXX := g++
 
-COMMON := $(PWD)/../common
+COMMON := $(PWD)/../../common
 CFLAGS :=
-CXXFLAGS := -I$(PWD)/.. -I$(COMMON)
+CXXFLAGS := -I$(PWD)/../../ -I$(COMMON)
 LDFLAGS := -lGL -lGLEW -lglfw -ldl
 
 HEADERCSOURCE := $(wildcard $(COMMON)/*.c)
@@ -22,10 +22,10 @@ $(COBJS) : $(HEADERCSOURCE)
 $(CCOBJS) : $(HEADERCCSOURCE)
 	$(CXX) -c -o $@ $< $(LDFLAGS) $(CFLAGS)
 
-$(CCEXECUTABLE): $(COBJS) $(CCOBJES) $(CCSOURCE)
+$(CCEXECUTABLE): $(CCSOURCE) $(COBJS) $(CCOBJES)
 	$(CXX) -o $@ $@.cc $(COBJS) $(CCOBJES) $(CXXFLAGS) $(LDFLAGS)
 
 .PHONY: clean
 
 clean:
-	rm -rf $(CCEXECUTABLE) *.o $(COMMON)/*.o
+	rm -rf $(CCEXECUTABLE) *.o
