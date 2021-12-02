@@ -1,3 +1,6 @@
+#include <string>
+#include <iostream>
+#include <unistd.h>
 #include "fileSystem.hpp"
 
 std::string fileSystem::getCurrentPath()

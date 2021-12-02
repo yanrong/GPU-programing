@@ -155,6 +155,10 @@ int main(int argc, char *argv[])
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        //for test, change the light's position values over time
+        lightPos.x = 0.8f + sin(glfwGetTime()) * 2.0f;
+        lightPos.y = sin(glfwGetTime()/ 2.0f) * 1.0f;
+
         //active shader
         lightingShader.use();
         lightingShader.setVec3("objectColor", glm::vec3(1.0f, 0.5f, 0.31f));
