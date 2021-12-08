@@ -122,7 +122,7 @@ int main(int argc, char *argv[])
     glEnable(GL_DEPTH_TEST);
 
     Shader objectShader("shaders/4.1.lightingMaps.vs", "shaders/4.1.lightingMaps.fs");
-    shader lightCubeShader("shaders/4.1.lightCube.vs", "shaders/4.1.lightCube.fs");
+    Shader lightCubeShader("shaders/4.1.lightCube.vs", "shaders/4.1.lightCube.fs");
     //first set up the object VAO
     glGenVertexArrays(1, &objectVAO);
     glGenBuffers(1, &VBO);
@@ -143,11 +143,11 @@ int main(int argc, char *argv[])
     glBindVertexArray(lightVAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     //skip fill data to buffer
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void *)(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void *)(0));
     glEnableVertexAttribArray(0);
 
     //load texture
-    diffuseMap = loadTexture(fileSystem::getResource("resources/textures/container2.jpg").c_str());
+    diffuseMap = loadTexture(fileSystem::getResource("/../resources/textures/container2.png").c_str());
     objectShader.use();
     objectShader.setInt("material.diffuse", 0);
 
@@ -212,6 +212,13 @@ int main(int argc, char *argv[])
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
+
+    glDeleteVertexArrays(1, &objectVAO);
+    glDeleteVertexArrays(1, &lightVAO);
+    glDeleteBuffers(1, &VBO);
+
+    glfwDestroyWindow(window);
+    glfwTerminate();
     return 0;
 }
 
@@ -270,8 +277,6 @@ static GLuint loadTexture(const char *path)
 
     glGenTextures(1, &textureID);
 
-    // tell stb_image.h to flip loaded texture's on the y-axis.
-    //stbi_set_flip_vertically_on_load(true);
     //load image, crate texture and generate mipmaps
     data = stbi_load(path, &width, &height, &nrChannels, 0);
 
@@ -281,7 +286,7 @@ static GLuint loadTexture(const char *path)
             format = GL_RED;
         } else if (nrChannels == 3) {
             format = GL_RGB;
-        } else (nrChannels == 4) {
+        } else if (nrChannels == 4) {
             format = GL_RGBA;
         }
         glBindTexture(GL_TEXTURE_2D, textureID);
@@ -296,7 +301,7 @@ static GLuint loadTexture(const char *path)
         glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
     } else {
-        std::cout << "Failed to load texture" << std::endl;
+        std::cout << "Failed to load texture :" << path<<std::endl;
     }
     stbi_image_free(data);
 
