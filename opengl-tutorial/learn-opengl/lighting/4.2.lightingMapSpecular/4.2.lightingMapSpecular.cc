@@ -151,8 +151,8 @@ int main(int argc, char *argv[])
     specularMap = loadTexture(fileSystem::getResource("/../resources/textures/container2_specular.png").c_str());
 
     objectShader.use();
-    objectShader.setInt("material.diffuse", 0);
-    objectShader.setInt("material.specular", 1);
+    objectShader.setInt("material.diffTexture", 0);
+    objectShader.setInt("material.specTexture", 1);
 
     //render loop
     while (!glfwWindowShouldClose(window)) {

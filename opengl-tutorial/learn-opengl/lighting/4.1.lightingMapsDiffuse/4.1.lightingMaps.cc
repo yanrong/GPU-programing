@@ -149,7 +149,7 @@ int main(int argc, char *argv[])
     //load texture
     diffuseMap = loadTexture(fileSystem::getResource("/../resources/textures/container2.png").c_str());
     objectShader.use();
-    objectShader.setInt("material.diffuse", 0);
+    objectShader.setInt("material.diffTexture", 0);
 
     //render loop
     while (!glfwWindowShouldClose(window)) {

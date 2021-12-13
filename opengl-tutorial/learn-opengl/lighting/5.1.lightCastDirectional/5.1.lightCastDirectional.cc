@@ -163,8 +163,8 @@ int main(int argc, char *argv[])
     specularMap = loadTexture(fileSystem::getResource("/../resources/textures/container2_specular.png").c_str());
 
     objectShader.use();
-    objectShader.setInt("material.diffuse", 0);
-    objectShader.setInt("material.specular", 1);
+    objectShader.setInt("material.diffTexture", 0);
+    objectShader.setInt("material.specTexture", 1);
 
     //render loop
     while (!glfwWindowShouldClose(window)) {
@@ -188,7 +188,7 @@ int main(int argc, char *argv[])
         objectShader.setVec3("light.diffuse",  0.5f, 0.5f, 0.5f);
         objectShader.setVec3("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
         //set the OBJECT material properties
-        objectShader.setFloat("material.shininess", 64.0f);
+        objectShader.setFloat("material.shininess", 32.0f);
 
         //view/projection transformations
         glm::mat4 projection = glm::perspective(glm::radians(camera.zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);

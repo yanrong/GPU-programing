@@ -152,9 +152,9 @@ int main(int argc, char *argv[])
     emissionMap = loadTexture(fileSystem::getResource("/../resources/textures/matrix.jpg").c_str());
 
     objectShader.use();
-    objectShader.setInt("material.diffuse", 0);
-    objectShader.setInt("material.specular", 1);
-    objectShader.setInt("material.emission", 2);
+    objectShader.setInt("material.diffTexture", 0);
+    objectShader.setInt("material.specTexture", 1);
+    objectShader.setInt("material.emissionTexture", 2);
 
     //render loop
     while (!glfwWindowShouldClose(window)) {
@@ -174,8 +174,8 @@ int main(int argc, char *argv[])
         objectShader.setVec3("viewPosition", camera.position);
 
         //set the OBJECT light properties
-        objectShader.setVec3("light.ambient",   0.2f, 0.2f, 0.2f);
-        objectShader.setVec3("light.diffuse",  0.5f, 0.5f, 0.5f);
+        objectShader.setVec3("light.ambient", 0.2f, 0.2f, 0.2f);
+        objectShader.setVec3("light.diffuse", 0.5f, 0.5f, 0.5f);
         objectShader.setVec3("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
         //set the OBJECT material properties
         objectShader.setFloat("material.shininess", 64.0f);
