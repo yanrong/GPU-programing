@@ -1,21 +1,11 @@
 #ifndef _MESH_H_
 #define _MESH_H_
 
-#include <string>
-#include <vector>
-
-#include <glad/glad.h>
-
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-
-#include "common/shader_s.hpp"
-
 #define MAX_BONE_INFLUENCE 4
 struct vertex {
     glm::vec3 position;
     glm::vec3 normal;
-    glm::vec2 textCoord;
+    glm::vec2 texCoord;
     glm::vec3 tangent;
     glm::vec3 bitAngent;
 
