@@ -75,9 +75,9 @@ int main(int argc, char *argv[])
     //enable depth test
     glEnable(GL_DEPTH_TEST);
 
-    Shader modelShader("shaders/6.1.multipleLights.vs", "shaders/6.1.multipleLights.fs");
+    Shader modelShader("shaders/modelLoad.vs", "shaders/modelLoad.fs");
 
-    model myModel(fileSystem::getResource("resources/objects/backpack/backpack.obj"));
+    model myModel(fileSystem::getResource("../resources/objects/backpack/backpack.obj"));
 
     // draw in wireframe
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);

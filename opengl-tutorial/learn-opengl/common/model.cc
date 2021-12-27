@@ -38,7 +38,7 @@ void model::loadModel(std::string const &path)
     }
 
     //retrieve the directory path of the filepath
-    directory = path.substr(0, path.find_last_not_of('/'));
+    directory = path.substr(0, path.find_last_of('/'));
     //process assimp's root node
     processNode(iScene->mRootNode, iScene);
 }
@@ -49,8 +49,8 @@ void model::processNode(aiNode* iNode, const aiScene* iScene)
     for (int i = 0; i < iNode->mNumMeshes; i++) {
         //the node object only contains indices to index the actual objects in the secen.
         //the secn contains all the data, node is just keep stuff organized
-        aiMesh* imesh = iScene->mMeshes[iNode->mMeshes[i]];
-        meshes.push_back(processMesh(imesh, iScene));
+        aiMesh* iMesh = iScene->mMeshes[iNode->mMeshes[i]];
+        meshes.push_back(processMesh(iMesh, iScene));
     }
     //after we've processed all of the meshed, recursively process each of the children nodes
     for (int i = 0; i < iNode->mNumChildren; i++) {
@@ -104,8 +104,10 @@ mesh model::processMesh(aiMesh* iMesh, const aiScene* iScene)
             myVertex.bitAngent = vector3;
         } else {
             myVertex.texCoord = glm::vec2(0.0f, 0.0f);
-            vertices.push_back(myVertex);
-        }
+		}
+        
+		vertices.push_back(myVertex);
+        
     }
 
     //now walk through each of the mesh's faces, (a face is a mesh its triangle)
