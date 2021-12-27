@@ -105,9 +105,8 @@ mesh model::processMesh(aiMesh* iMesh, const aiScene* iScene)
         } else {
             myVertex.texCoord = glm::vec2(0.0f, 0.0f);
 		}
-        
+
 		vertices.push_back(myVertex);
-        
     }
 
     //now walk through each of the mesh's faces, (a face is a mesh its triangle)
