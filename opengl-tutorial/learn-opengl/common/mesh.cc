@@ -6,10 +6,9 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "common/shader_s.hpp"
 #include "mesh.hpp"
 
-mesh::mesh(std::vector<vertex> vertices, vector<unsigned int> indices, vector<texture> textures)
+mesh::mesh(std::vector<vertex> vertices, std::vector<unsigned int> indices, std::vector<texture> textures)
 {
     this->vertices = vertices;
     this->indices = indices;
@@ -30,8 +29,8 @@ void mesh::draw(Shader &shader)
     for (int i = 0; i < textures.size(); i++)
     {
         glActiveTexture(GL_TEXTURE0 + i); //active the texture
-        string number;
-        string name = textures[i].type;
+        std::string number;
+        std::string name = textures[i].type;
         if (name == "texture_diffuse") {
             number = std::to_string(diffuseNR++); // transfer unsigned int to string
         } else if (name == "texture_specular") {
@@ -93,7 +92,7 @@ void mesh::setupMesh()
     glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (void *)offsetof(vertex, bitAngent));
     //ids
     glEnableVertexAttribArray(5);
-    glVertexAttribPointer(5, 4, GL_INT, sizeof(vertex), (void *)offsetof(vertex, mBoneIds));
+    glVertexAttribIPointer(5, 4, GL_INT, sizeof(vertex), (void *)offsetof(vertex, mBoneIds));
     //weights
     glEnableVertexAttribArray(6);
     glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(vertex), (void *)offsetof(vertex, mWeights));

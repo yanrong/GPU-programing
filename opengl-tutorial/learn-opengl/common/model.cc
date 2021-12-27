@@ -2,12 +2,6 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
-#include <assimp/postprocess.h>
-//Open STB ON
-#define STB_IMAGE_IMPLEMENTATION
-#include <stb/stb_image.h>
 
 #include <string>
 #include <fstream>
@@ -17,22 +11,22 @@
 #include <vector>
 
 #include "mesh.hpp"
-#include "shader_s.hpp"
+#include "model.hpp"
 
-mesh::mesh(string const &path, bool gamma = false)
+model::model(std::string const &path, bool gamma)
 {
     gammaCorrection = gamma;
     loadModel(path);
 }
 
-void mesh::draw(Shader &shader)
+void model::draw(Shader &shader)
 {
     for(unsigned int i = 0; i < meshes.size(); i++) {
         meshes[i].draw(shader);
     }
 }
 
-void mesh::loadModel(std::string const &path)
+void model::loadModel(std::string const &path)
 {
     //read file via ASSIMP
     Assimp::Importer importer;
@@ -49,7 +43,7 @@ void mesh::loadModel(std::string const &path)
     processNode(iScene->mRootNode, iScene);
 }
 
-void mesh::processNode(aiNode* iNode, const aiScene* iScene)
+void model::processNode(aiNode* iNode, const aiScene* iScene)
 {
     //proces each mesh located at the current node
     for (int i = 0; i < iNode->mNumMeshes; i++) {
@@ -64,7 +58,7 @@ void mesh::processNode(aiNode* iNode, const aiScene* iScene)
     }
 }
 
-void mesh::processMesh(aiMesh* iMesh, const aiScene* iScene)
+mesh model::processMesh(aiMesh* iMesh, const aiScene* iScene)
 {
     //data to file
     std::vector<vertex> vertices;
@@ -107,7 +101,7 @@ void mesh::processMesh(aiMesh* iMesh, const aiScene* iScene)
             vector3.x = iMesh->mBitangents[i].x;
             vector3.y = iMesh->mBitangents[i].y;
             vector3.z = iMesh->mBitangents[i].z;
-            myVertex.biTangent = vector3;
+            myVertex.bitAngent = vector3;
         } else {
             myVertex.texCoord = glm::vec2(0.0f, 0.0f);
             vertices.push_back(myVertex);
@@ -146,7 +140,7 @@ void mesh::processMesh(aiMesh* iMesh, const aiScene* iScene)
     return mesh(vertices, indices, textures);
 }
 
-std::vector<texture> mesh::loadMaterialTextures(aiMaterial* material, aiTextureType type, std::string typeName)
+std::vector<texture> model::loadMaterialTextures(aiMaterial* material, aiTextureType type, std::string typeName)
 {
     std::vector<texture> textures;
     for (int i = 0; i< material->GetTextureCount(type); i++) {
@@ -176,9 +170,9 @@ std::vector<texture> mesh::loadMaterialTextures(aiMaterial* material, aiTextureT
     return textures;
 }
 
-unsigned int textureFromFile(const char* path, const std::string &directory, bool gamma = false)
+unsigned int textureFromFile(const char* path, const std::string &directory, bool gamma)
 {
-    std::string filename = string(path);
+    std::string filename = std::string(path);
     filename = directory + '/' + filename;
 
     unsigned int textureID;

@@ -1,6 +1,8 @@
 #ifndef _MESH_H_
 #define _MESH_H_
 
+#include "shader_s.hpp"
+
 #define MAX_BONE_INFLUENCE 4
 struct vertex {
     glm::vec3 position;
@@ -26,11 +28,11 @@ public:
     std::vector<texture> textures;
     GLuint VAO;
 
-    mesh(std::vector<vertex> vertices, vector<unsigned int> indices, vector<texture> textures);
+    mesh(std::vector<vertex> vertices, std::vector<unsigned int> indices, std::vector<texture> textures);
     void draw(Shader &shader);
 private:
     GLuint VBO, EBO;
     void setupMesh();
-}
+};
 
 #endif /* end of _MESH_H_ */
