@@ -145,7 +145,7 @@ std::vector<texture> model::loadMaterialTextures(aiMaterial* material, aiTexture
 {
     std::vector<texture> textures;
     for (int i = 0; i< material->GetTextureCount(type); i++) {
-        aiString iString;
+        aiString iString; //store the texture object name
         material->GetTexture(type, i, &iString);
         //check if texture was load before and if so, continue to next interation,skip loading a new texture
         bool skip = false;
@@ -159,6 +159,7 @@ std::vector<texture> model::loadMaterialTextures(aiMaterial* material, aiTexture
 
         if (!skip) {
             texture tmpTexture;
+            //std::cout <<"istring = " << iString.C_Str() << " directory= " << directory << std::endl;
             tmpTexture.id = textureFromFile(iString.C_Str(), this->directory);
             tmpTexture.type = typeName;
             tmpTexture.path = iString.C_Str();
@@ -174,7 +175,8 @@ std::vector<texture> model::loadMaterialTextures(aiMaterial* material, aiTexture
 unsigned int textureFromFile(const char* path, const std::string &directory, bool gamma)
 {
     std::string filename = std::string(path);
-    filename = directory + '/' + filename;
+    filename = directory + '/' + filename; //get the texture object in current{directory} path
+    //std::cout <<"full filename = " << filename << std::endl;
 
     unsigned int textureID;
     glGenTextures(1, &textureID);
