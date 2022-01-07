@@ -27,8 +27,8 @@ const unsigned int SCR_HEIGHT = 600;
 
 //camera
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
-float lastX = SCR_WIDTH / 2.0f;
-float lastY = SCR_HEIGHT / 2.0f;
+float lastX = (float)SCR_WIDTH / 2.0f;
+float lastY = (float)SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
 
 //timing
@@ -85,14 +85,14 @@ GLfloat planeVertices[] = {
      5.0f, -0.5f, -5.0f,  2.0f, 2.0f
 };
 
-GLfloat quadVertices[] = { // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
+GLfloat quadVertices[] = { // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates. NOTE that this plane is now much smaller and at the top of the screen
     // positions   // texCoords
-    -1.0f,  1.0f,  0.0f, 1.0f,
-    -1.0f, -1.0f,  0.0f, 0.0f,
-     1.0f, -1.0f,  1.0f, 0.0f,
-    -1.0f,  1.0f,  0.0f, 1.0f,
-     1.0f, -1.0f,  1.0f, 0.0f,
-     1.0f,  1.0f,  1.0f, 1.0f
+    -0.3f,  1.0f,  0.0f, 1.0f,
+    -0.3f,  0.7f,  0.0f, 0.0f,
+     0.3f,  0.7f,  1.0f, 0.0f,
+    -0.3f,  1.0f,  0.0f, 1.0f,
+     0.3f,  0.7f,  1.0f, 0.0f,
+     0.3f,  1.0f,  1.0f, 1.0f
 };
 
 int main(int argc, char *argv[])
@@ -144,8 +144,8 @@ int main(int argc, char *argv[])
     glDepthFunc(GL_LESS);  // always pass the depth test (same effect as glDisable(GL_DEPTH_TEST))
 
     // build shader
-    Shader shader("shaders/frameBuffers.vs", "shaders/frameBuffers.fs");
-    Shader screenShader("shaders/frameBuffersScreen.vs", "shaders/pp/frameBuffersScreenKernels.fs");
+    Shader shader("shaders/5.2.frameBuffers.vs", "shaders/5.2.frameBuffers.fs");
+    Shader screenShader("shaders/5.2.frameBuffersScreen.vs", "shaders/5.2.frameBuffersScreen.fs");
 
     // cube
     glGenVertexArrays(1, &cubeVAO);
@@ -243,7 +243,12 @@ int main(int argc, char *argv[])
         shader.use();
 
         glm::mat4 model = glm::mat4(1.0f);
+        camera.yaw += 180.0f; //rotate the camera's yaw 180 degree
+        // call this to make sure it updates its camera vectors, note that we disable pitch constrains for this specific case (otherwise we can't reverse camera's pitch values)
+        camera.processMouseMovement(0, 0, false);
         glm::mat4 view = camera.getViewMatrix();
+        camera.yaw -= 180.0f; //reset the camera's yaw to it's origin value
+        camera.processMouseMovement(0, 0, true);
         glm::mat4 projection = glm::perspective(glm::radians(camera.zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
         shader.setMat4("view", view);
         shader.setMat4("projection", projection);
@@ -269,12 +274,38 @@ int main(int argc, char *argv[])
         glDrawArrays(GL_TRIANGLES, 0, 6);
         glBindVertexArray(0);
 
-        //now bind back to default framebuffer and draw  quad plane with the attached framebuffer color texture
+        // second render pass: draw as normal, bind the framebuffer to system defualt framebuffer
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        glDisable(GL_DEPTH_TEST);
 
-        glClearColor(1.0f, 1.0f, 1.0f, 1.0f); //set clear color as black
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClearColor(0.1f, 0.1f, 0.1f, 1.0f); //set clear color as black
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        model = glm::mat4(1.0f);
+        view = camera.getViewMatrix();
+        shader.setMat4("view", view);
+
+        //cubes
+        glBindVertexArray(cubeVAO);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, cubeTexture);
+        //first cube
+        model = glm::translate(model, glm::vec3(-1.0f, 0.0f, -1.0f));
+        shader.setMat4("model", model);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+        //second cube
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(2.0f, 0.0f, 0.0f));
+        shader.setMat4("model", model);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+        //floor
+        glBindVertexArray(planeVAO);
+        glBindTexture(GL_TEXTURE_2D, floorTexture);
+        shader.setMat4("model", glm::mat4(1.0f));
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+        glBindVertexArray(0);
+
+        //now draw the mirror quad with screen texture
+        glDisable(GL_DEPTH_TEST);
 
         screenShader.use();
         glBindVertexArray(quadVAO);
