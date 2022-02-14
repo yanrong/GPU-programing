@@ -6,6 +6,7 @@
 #include <assimp/postprocess.h>
 //Open STB ON
 #include <stb/stb_image.h>
+#include "mesh.hpp"
 #include "shader_s.hpp"
 
 unsigned int textureFromFile(const char* path, const std::string &directory, bool gamma = false);

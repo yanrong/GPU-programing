@@ -210,7 +210,6 @@ int main(int argc, char *argv[])
     glDeleteBuffers(1, &cubeVBO);
 
     glfwTerminate();
-    glfwTerminate();
 
     return 0;
 }

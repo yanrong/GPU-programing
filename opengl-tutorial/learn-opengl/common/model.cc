@@ -10,7 +10,6 @@
 #include <map>
 #include <vector>
 
-#include "mesh.hpp"
 #include "model.hpp"
 
 model::model(std::string const &path, bool gamma)
