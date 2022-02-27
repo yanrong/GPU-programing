@@ -12,6 +12,8 @@
 #include "common/camera.hpp"
 #include "common/model.hpp"
 
+//#define OFFSCREEN_F
+
 static void framebufferSizeCallback(GLFWwindow* window, int width, int height);
 static void mouseCallback(GLFWwindow* window, double xPos, double yPos);
 static void scrollCallback(GLFWwindow* window, double xoffset, double yoffset);
@@ -171,7 +173,7 @@ int main(int argc, char *argv[])
         std::cout << "Error: Framebuffer is not complete!" << std::endl;
     }
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
+#ifdef OFFSCREEN_F
     //configure second post-processing framebuffer
     glGenFramebuffers(1, &intermediateFBO);
     glBindFramebuffer(GL_FRAMEBUFFER, intermediateFBO);
@@ -187,7 +189,7 @@ int main(int argc, char *argv[])
         std::cout << "Error: intermediate ramebuffer is not complete" << std::endl;
     }
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
+#endif
     shader.use();
     screenShader.setInt("screenTexture", 0);
 
@@ -222,9 +224,13 @@ int main(int argc, char *argv[])
 
         //2. not blit multisampled buffer to normal colorbuffer of intermediate FBO.
         glBindFramebuffer(GL_READ_FRAMEBUFFER, framebuffer);
+#ifdef OFFSCREEN_F
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, intermediateFBO);
+#else
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+#endif
         glBlitFramebuffer(0, 0, SCR_WIDTH, SCR_HEIGHT, 0, 0, SCR_WIDTH, SCR_HEIGHT, GL_COLOR_BUFFER_BIT, GL_NEAREST);
-
+#ifdef OFFSCREEN_F
         //3. now render quad with scene's visuals as its texture image
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -238,7 +244,7 @@ int main(int argc, char *argv[])
         // use the now resolved color attachment as the quad's texture
         glBindTexture(GL_TEXTURE_2D, screenTexture);
         glDrawArrays(GL_TRIANGLES, 0, 6);
-
+#endif
         //swap buffer and IO event poll
         glfwSwapBuffers(window);
         glfwPollEvents();
