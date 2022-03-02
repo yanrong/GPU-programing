@@ -16,12 +16,12 @@ static void framebufferSizeCallback(GLFWwindow* window, int width, int height);
 static void mouseCallback(GLFWwindow* window, double xPos, double yPos);
 static void scrollCallback(GLFWwindow* window, double xoffset, double yoffset);
 static void processInput(GLFWwindow* window);
-static GLuint loadTexture(const char* path);
+static GLuint loadTexture(const char* path, bool gammaCorrection);
 
 //settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
-bool gammaEnable = false;
+bool gammaEnabled = false;
 bool gammaKeyPressed = false;
 //camera
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
@@ -106,7 +106,7 @@ int main(int argc, char* argv[])
 
     //shder configureation
     shader.use();
-    shader.setInt("flootTexture", 0);
+    shader.setInt("floorTexture", 0);
 
     // lighting info
     glm::vec3 lightPositions[] = {
@@ -142,15 +142,15 @@ int main(int argc, char* argv[])
         shader.setMat4("view", view);
 
         //set light position uniforms
-        glUnifrom3fv(glGetUniformLocation(shader.Id, "lightPositions"), 4, glm::value_ptr(lightPositions));
-        glUnifrom3fv(glGetUniformLocation(shader.Id, "lightColors"), 4, glm::value_ptr(lightColors));
-        shader.setVec3("viewPostion", camera.position);
-        shader.setInt("gamma", gammaEnable);
+        glUniform3fv(glGetUniformLocation(shader.Id, "lightPositions"), 4, &lightPositions[0][0]);
+        glUniform3fv(glGetUniformLocation(shader.Id, "lightColors"), 4, &lightColors[0][0]);
+        shader.setVec3("viewPosition", camera.position);
+        shader.setInt("gamma", gammaEnabled);
 
         //floor
         glBindVertexArray(planeVAO);
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, gammaEnable ? gammaCorrectedTexture : floorTexture);
+        glBindTexture(GL_TEXTURE_2D, gammaEnabled ? gammaCorrectedTexture : floorTexture);
         glDrawArrays(GL_TRIANGLES, 0, 6);
 
         std::cout << (gammaEnabled ? "Gamma enabled" : "Gamma disabled") << std::endl;
@@ -182,12 +182,12 @@ void processInput(GLFWwindow *window)
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         camera.processKeyboardOpt(RIGHT, deltaTime);
 
-    if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS && !blinnKeyPressed) {
-        blinn = !blinn;
-        blinnKeyPressed = true;
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS && !gammaKeyPressed) {
+        gammaEnabled = !gammaEnabled;
+        gammaKeyPressed = true;
     }
-    if (glfwGetKey(window, GLFW_KEY_B) == GLFW_RELEASE) {
-        blinnKeyPressed = false;
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_RELEASE) {
+        gammaKeyPressed = false;
     }
 }
 
