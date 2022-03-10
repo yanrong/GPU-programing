@@ -8,7 +8,7 @@ CXXFLAGS := -I$(PWD)/../../ -I$(COMMON)
 LDFLAGS := -lGL -lGLEW -lglfw -ldl
 
 HEADERCSOURCE := $(wildcard $(COMMON)/*.c)
-HEADERCCSOURCE := $(wildcard $(COMMON)/*.cc)
+HEADERCCSOURCE := $(COMMON)/shader_s.cc $(COMMON)/fileSystem.cc $(COMMON)/camera.cc
 CCSOURCE := $(wildcard *.cc)
 CCEXECUTABLE := $(CCSOURCE:.cc=)
 COBJS := $(HEADERCSOURCE:.c=.o)
@@ -16,13 +16,7 @@ CCOBJES := $(HEADERCCSOURCE:.cc=.o)
 
 all: $(CCEXECUTABLE)
 
-$(COBJS) : $(HEADERCSOURCE)
-	$(CC) -c -o $@ $< $(LDFLAGS) $(CFLAGS)
-
-$(CCOBJS) : $(HEADERCCSOURCE)
-	$(CXX) -c -o $@ $< $(LDFLAGS) $(CFLAGS)
-
-$(CCEXECUTABLE): $(CCSOURCE) $(COBJS) $(CCOBJES)
+$(CCEXECUTABLE): $(CCSOURCE)
 	$(CXX) -o $@ $@.cc $(COBJS) $(CCOBJES) $(CXXFLAGS) $(LDFLAGS)
 
 .PHONY: clean
