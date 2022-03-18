@@ -23,6 +23,7 @@ static void renderQuad();
 //settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
+float heightScale = 0.1;
 
 //camera
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
@@ -38,7 +39,7 @@ GLuint quadVAO = 0, quadVBO = 0;
 int main(int argc, char* argv[])
 {
     GLFWwindow* window;
-    GLuint diffuseMapTexture, normalMapTexture;
+    GLuint diffuseMapTexture, normalMapTexture, heightMapTexture;
 
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -72,24 +73,26 @@ int main(int argc, char* argv[])
     //configure global openg state
     glEnable(GL_DEPTH_TEST);
 
-
     //build shader
-    Shader shader("shaders/normalMap.vert", "shaders/normalMap.frag");
+    Shader shader("shaders/stepParallaxMap.vert", "shaders/stepParallaxMap.frag");
 
     //load textures
-    diffuseMapTexture = loadTexture(fileSystem::getResource("../resources/textures/brickwall.jpg").c_str());
-    normalMapTexture = loadTexture(fileSystem::getResource("../resources/textures/brickwall_normal.jpg").c_str());
+    diffuseMapTexture = loadTexture(fileSystem::getResource("../resources/textures/bricks2.jpg").c_str());
+    normalMapTexture = loadTexture(fileSystem::getResource("../resources/textures/bricks2_normal.jpg").c_str());
+    heightMapTexture = loadTexture(fileSystem::getResource("../resources/textures/bricks2_disp.jpg").c_str());
 
     //shader configuraion
     shader.use();
     shader.setInt("diffuseMap", 0);
     shader.setInt("normalMap", 1);
+    shader.setInt("depthMap", 2);
 
     //light info
     glm::vec3 lightPosition(0.5f, 1.0f, 0.3f);
 
     //render loop
     while (!glfwWindowShouldClose(window)) {
+        //per-frame time
         float currentFrame = static_cast<float>(glfwGetTime());
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
@@ -113,10 +116,14 @@ int main(int argc, char* argv[])
         shader.setMat4("model", model);
         shader.setVec3("viewPosition", camera.position);
         shader.setVec3("lightPosition", lightPosition);
+        shader.setFloat("heightScale", heightScale); // adjust with Q and E keys
+
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, diffuseMapTexture);
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, normalMapTexture);
+        glActiveTexture(GL_TEXTURE2);
+        glBindTexture(GL_TEXTURE_2D, heightMapTexture);
         renderQuad();
 
         //render light source(simply re-renders a smaller plane at the light's position for debugging/visualization)
@@ -126,6 +133,7 @@ int main(int argc, char* argv[])
         shader.setMat4("model", model);
         renderQuad();
 
+        //swap buffer and IO poll
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
@@ -147,6 +155,20 @@ void processInput(GLFWwindow *window)
         camera.processKeyboardOpt(LEFT, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         camera.processKeyboardOpt(RIGHT, deltaTime);
+
+    if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
+        if (heightScale > 0.0f) {
+            heightScale -= 0.0005f;
+        } else {
+            heightScale = 0.0f;
+        }
+    } else if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
+        if (heightScale < 1.0f) {
+            heightScale += 0.0005f;
+        } else {
+            heightScale = 1.0f;
+        }
+    }
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
@@ -204,8 +226,8 @@ GLuint loadTexture(const char* path)
         glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
 
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, format == GL_RGBA ? GL_CLAMP_TO_EDGE : GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, format == GL_RGBA ? GL_CLAMP_TO_EDGE : GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
@@ -249,10 +271,12 @@ void renderQuad()
         tangent1.x = f * (deltaUV2.y * edge1.x - deltaUV1.y * edge2.x);
         tangent1.y = f * (deltaUV2.y * edge1.y - deltaUV1.y * edge2.y);
         tangent1.z = f * (deltaUV2.y * edge1.z - deltaUV1.y * edge2.z);
+        tangent1 = glm::normalize(tangent1);
 
         bitangent1.x = f * (-deltaUV2.x * edge1.x + deltaUV1.x * edge2.x);
         bitangent1.y = f * (-deltaUV2.x * edge1.y + deltaUV1.x * edge2.y);
         bitangent1.z = f * (-deltaUV2.x * edge1.z + deltaUV1.x * edge2.z);
+        bitangent1 = glm::normalize(bitangent1);
 
         // triangle 2
         edge1 = pos3 - pos1;
@@ -265,10 +289,12 @@ void renderQuad()
         tangent2.x = f * (deltaUV2.y * edge1.x - deltaUV1.y * edge2.x);
         tangent2.y = f * (deltaUV2.y * edge1.y - deltaUV1.y * edge2.y);
         tangent2.z = f * (deltaUV2.y * edge1.z - deltaUV1.y * edge2.z);
+        tangent2 = glm::normalize(tangent2);
 
         bitangent2.x = f * (-deltaUV2.x * edge1.x + deltaUV1.x * edge2.x);
         bitangent2.y = f * (-deltaUV2.x * edge1.y + deltaUV1.x * edge2.y);
         bitangent2.z = f * (-deltaUV2.x * edge1.z + deltaUV1.x * edge2.z);
+        bitangent2 = glm::normalize(bitangent2);
 
         float quadVertices[] = {
             // positions            // normal         // texcoords  // tangent                          // bitangent

@@ -18,8 +18,33 @@ uniform float heightScale;
 
 vec2 parallaxMap(vec2 texCoord, vec3 viewDirection)
 {
-    float height = texture(depthMap, texCoord).r;
-    return texCoord - viewDirection.xy * (height * heightScale);
+    //number of depth layers
+    const float minLayers = 8;
+    const float maxLayers = 32;
+    //interpolate in range [max min] according to view direction and normal
+    float numLayers = mix(maxLayers, minLayers, abs(dot(vec3(0.0, 0.0, 1.0), viewDirection)));
+    //calculate the size of  each layers
+    float layerDepth = 1.0 / numLayers;
+    //depth of current layer
+    float currentLayderDepth = 0.0;
+    //the amount to shift the texture coordinate per layer(from the vector P)
+    vec2 P = viewDirection.xy / viewDirection.z * heightScale;
+    vec2 deltaTexCoord = P / numLayers;
+
+    //get initial values
+    vec2 currentTexCoord = texCoord;
+    float currentDepthMapValue = texture(depthMap, currentTexCoord).r;
+
+    while (currentLayderDepth < currentDepthMapValue) {
+        //shift texture coordinates along direction of P
+        currentTexCoord -= deltaTexCoord;
+        //get depthmap value a current texture
+        currentDepthMapValue = texture(depthMap, currentTexCoord).r;
+        //get dept of next layer
+        currentLayderDepth += layerDepth;
+    }
+
+    return currentTexCoord;
 }
 
 void main(){

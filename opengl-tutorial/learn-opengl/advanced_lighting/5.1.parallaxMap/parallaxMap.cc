@@ -112,7 +112,7 @@ int main(int argc, char* argv[])
         shader.setMat4("view", view);
         //render normal-mapped quad
         glm::mat4 model = glm::mat4(1.0f);
-        model = glm::rotate(model, glm::radians(float(glfwGetTime())) * -10.0f, glm::normalize(glm::vec3(1.0, 0.0, 1.0)));
+        model = glm::rotate(model, glm::radians(float(glfwGetTime()) * -10.0f), glm::normalize(glm::vec3(1.0, 0.0, 1.0)));
         shader.setMat4("model", model);
         shader.setVec3("viewPosition", camera.position);
         shader.setVec3("lightPosition", lightPosition);
@@ -163,7 +163,7 @@ void processInput(GLFWwindow *window)
             heightScale = 0.0f;
         }
     } else if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
-        if (heightScale > 1.0f) {
+        if (heightScale < 1.0f) {
             heightScale += 0.0005f;
         } else {
             heightScale = 1.0f;
