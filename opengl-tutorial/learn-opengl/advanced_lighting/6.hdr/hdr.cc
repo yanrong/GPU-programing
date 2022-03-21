@@ -29,7 +29,7 @@ bool hdrKeyPressed = false;
 float exposure = 1.0f;
 
 //camera
-Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+Camera camera(glm::vec3(0.0f, 0.0f, 5.0f));
 float lastX = (float)SCR_WIDTH / 2.0;
 float lastY = (float)SCR_HEIGHT / 2.0;
 bool firstMouse = true;
@@ -86,7 +86,7 @@ int main(int argc, char* argv[])
     Shader hdrShader("shaders/hdr.vert", "shaders/hdr.frag");
 
     //load texture
-    woodTexture = loadTexture(fileSystem::getResource("../resources/textures/wood.png").c_str());
+    woodTexture = loadTexture(fileSystem::getResource("../resources/textures/wood.png").c_str(), true);
 
     //configure floating point framebuffer
     glGenFramebuffers(1, &hdrFBO);
@@ -166,6 +166,7 @@ int main(int argc, char* argv[])
         model = glm::scale(model, glm::vec3(2.5f, 2.5f, 27.5f));
         shader.setMat4("model", model);
         shader.setInt("inverseNormals", true);
+        renderCube();
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
         //2. now rende float point color buffer to 2D quad and tonemap HDR colors
@@ -178,7 +179,10 @@ int main(int argc, char* argv[])
         hdrShader.setFloat("exposure", exposure);
         renderQuad();
 
-        //glfw swap buffers and poll IO events
+        std::cout << "hdr: " << (hdr ? "on" : "off") << "| exposure: " << exposure << std::endl;
+
+        // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
+        // -------------------------------------------------------------------------------
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
@@ -203,15 +207,15 @@ void processInput(GLFWwindow *window)
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         camera.processKeyboardOpt(RIGHT, deltaTime);
 
-    if (glfwGetKey(window, GLFW_SAMPLES) == GLFW_PRESS && !hdrKeyPressed) {
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS && !hdrKeyPressed) {
         hdr = !hdr;
         hdrKeyPressed = true;
     }
-    if (glfwGetKey(window, GLFW_SAMPLES) == GLFW_RELEASE) {
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_RELEASE) {
         hdrKeyPressed = false;
     }
     if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
-        if (exposure >0.0f) {
+        if (exposure > 0.0f) {
             exposure -= 0.001f;
         } else {
             exposure = 0.0f;
@@ -265,12 +269,12 @@ GLuint loadTexture(const char* path, bool gammaCorrection)
 
     if (data) {
         if (nrComponents == 1) {
-            internalFormat =  dataFromat = GL_RED;
+            internalFormat =  dataFormat = GL_RED;
         } else if (nrComponents == 3) {
-            internalFormat = gammaCorrection ? GL_SRGB ? GL_RGB;
+            internalFormat = gammaCorrection ? GL_SRGB : GL_RGB;
             dataFormat = GL_RGB;
         } else if (nrComponents == 4) {
-            internalFormat = gammaCorrection ? GL_SRGB_ALPHA ? GL_RGB;
+            internalFormat = gammaCorrection ? GL_SRGB_ALPHA : GL_RGB;
             dataFormat = GL_RGBA;
         }
 

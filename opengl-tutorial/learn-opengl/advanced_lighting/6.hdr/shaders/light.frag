@@ -26,5 +26,14 @@ void main(){
     vec3 lighting = vec3(0.0);
     for (int i = 0; i < 16 ; i++) {
         //diffuses
+        vec3 lightDirection = normalize(lights[i].Position - fsIn.fragPosition);
+        float diff = max(dot(lightDirection, normal), 0.0);
+        vec3 diffuse = lights[i].Color * diff * color;
+        vec3 result = diffuse;
+        //attenuation (use quadratic as we have gamma correction)
+        float distance = length(fsIn.fragPosition - lights[i].Position);
+        result *= 1.0 / (distance * distance);
+        lighting += result;
     }
+    fragColor = vec4(ambient + lighting, 1.0);
 }
