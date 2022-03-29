@@ -49,6 +49,8 @@ int main(int argc, char* argv[])
     std::vector<glm::vec3> lightPosition;
     std::vector<glm::vec3> lightColor;
     std::vector<glm::vec3> objectPosition;
+    //define the attenuation parameters and calculate radius
+    const float linear = 0.7, quadratic = 1.8, constant = 1.0;
 
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -188,7 +190,7 @@ int main(int argc, char* argv[])
         for (int i = 0; i < objectPosition.size(); i++) {
             model = glm::mat4(1.0f);
             model = glm::translate(model, objectPosition[i]);
-            model = glm::scale(model, glm::vec3(0.5f));
+            model = glm::scale(model, glm::vec3(0.25f));
             shaderGeometryPass.setMat4("model", model);
             backpack.draw(shaderGeometryPass);
         }
@@ -204,7 +206,6 @@ int main(int argc, char* argv[])
         glActiveTexture(GL_TEXTURE2);
         glBindTexture(GL_TEXTURE_2D, gAlbedoSpec);
         //send the light uniforms
-        const float linear = 0.7, quadratic = 1.8;
         for (int i = 0; i < lightPosition.size(); i++) {
             shaderLightingPass.setVec3("lights[" + std::to_string(i) + "].position", lightPosition[i]);
             shaderLightingPass.setVec3("lights[" + std::to_string(i) + "].color", lightColor[i]);
@@ -212,6 +213,11 @@ int main(int argc, char* argv[])
             //update attenuation parameters and calculate radius
             shaderLightingPass.setFloat("lights[" + std::to_string(i) + "].linear", linear);
             shaderLightingPass.setFloat("lights[" + std::to_string(i) + "].quadratic", quadratic);
+
+            //then calculate radius for light volume/sphere
+            const float maxBrightness = std::fmaxf(std::fmaxf(lightColor[i].r, lightColor[i].g), lightColor[i].b);
+            float radius = (-linear + std::sqrt(linear * linear - 4 * quadratic * (constant - (256.0f / 5.0f) * maxBrightness))) / (2.0f * quadratic);
+            shaderLightingPass.setFloat("lights[" + std::to_string(i) + "].radius", radius);
         }
         shaderLightingPass.setVec3("viewPosition", camera.position);
         //finally render quad
