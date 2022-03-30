@@ -38,7 +38,7 @@ float lastFrame = 0.0f;
 GLuint quadVAO = 0, quadVBO = 0;
 GLuint cubeVAO = 0, cubeVBO = 0;
 
-static float lerp(float a, floatg b, float f) {
+static float lerp(float a, float b, float f) {
     return a + f * (b - a);
 }
 
@@ -48,13 +48,13 @@ int main(int argc, char* argv[])
     GLuint gPosition, gNormal, gAlbedo;
     GLuint gBuffer, rboDepth;
     GLuint ssaoFBO, ssaoBlurFBO;
-    GLuint ssaoColorBuffer, ssaoBlur, noiseTexture;
+    GLuint ssaoColorTexture, ssaoBlurTexture, noiseTexture;
     //define the color attachment that the OpenGL will render to
     GLuint attachments[3] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2};
     std::vector<glm::vec3> ssaoKernel;
     std::vector<glm::vec3> ssaoNoise;
     //define the attenuation parameters and calculate radius
-    const float linear = 0.7, quadratic = 1.8, constant = 1.0;
+    const float linear = 0.9, quadratic = 0.032;
 
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -145,40 +145,40 @@ int main(int argc, char* argv[])
 
     glBindFramebuffer(GL_FRAMEBUFFER, ssaoFBO);
     //SSAO color buffer
-    glGenTextures(1, &ssaoColorBuffer);
-    glBindTexture(GL_TEXTURE_2D, ssaoColorBuffer);
+    glGenTextures(1, &ssaoColorTexture);
+    glBindTexture(GL_TEXTURE_2D, ssaoColorTexture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, SCR_WIDTH, SCR_HEIGHT, 0, GL_RED, GL_FLOAT, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ssaoColorBuffer, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ssaoColorTexture, 0);
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-        std::cerr << "Framebuffer not complete" << std::endl;
+        std::cerr << "SSAO Framebuffer not complete!" << std::endl;
     }
     //SSAO blur buffer
     glBindFramebuffer(GL_FRAMEBUFFER, ssaoBlurFBO);
-    glGenTextures(1, &ssaoBlur);
-    glBindTexture(GL_TEXTURE_2D, ssaoBlur);
+    glGenTextures(1, &ssaoBlurTexture);
+    glBindTexture(GL_TEXTURE_2D, ssaoBlurTexture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, SCR_WIDTH, SCR_HEIGHT, 0, GL_RED, GL_FLOAT, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ssaoBlur, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ssaoBlurTexture, 0);
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-        std::cerr << "Framebuffer not complete" << std::endl;
+        std::cerr << " SSAO Blur Framebuffer not complete!" << std::endl;
     }
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     //generate sampler kernel
     std::uniform_real_distribution<GLfloat> randomFloats(0.0, 1.0); //generates random float between 0.0 - 1.0
     std::default_random_engine generator;
-    std::vector<glm::vec3> ssaoKernel;
     for (int i = 0; i < 64; i++) {
-        glm::vec3 smaple(randomFloats(generator) * 2.0 - 1.0, randomFloats(generator) * 2.0 - 1.0, randomFloats(generator));
-        smaple = glm::normalize(smaple);
-        smaple *= randomFloats(generator);
+        glm::vec3 sample(randomFloats(generator) * 2.0 - 1.0, randomFloats(generator) * 2.0 - 1.0, randomFloats(generator));
+        sample = glm::normalize(sample);
+        sample *= randomFloats(generator);
         float scale = float (i) / 64.0;
 
         scale = lerp(0.1f, 1.0f, scale * scale);
-        smaple *= scale;
-        ssaoKernel.push_back(smaple);
+        sample *= scale;
+        ssaoKernel.push_back(sample);
     }
 
     //generate noise texture
@@ -196,16 +196,16 @@ int main(int argc, char* argv[])
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
     glm::vec3 lightPosition = glm::vec3(2.0, 4.0, -2.0);
-    glm::vec3 lightColor = glm::Vec3(0.2, 0.2, 0.7);
+    glm::vec3 lightColor = glm::vec3(0.2, 0.2, 0.7);
 
     //shader configuration
     shaderLightingPass.use();
     shaderLightingPass.setInt("gPosition", 0);
     shaderLightingPass.setInt("gNormal", 1);
     shaderLightingPass.setInt("gAlbedo", 2);
-    shaderLightingPass.setInt("SSAO", 3);
+    shaderLightingPass.setInt("ssao", 3);
     shaderSSAO.use();
-    shaderSSAO.setInt("gPosition", 1);
+    shaderSSAO.setInt("gPosition", 0);
     shaderSSAO.setInt("gNormal", 1);
     shaderSSAO.setInt("texNoise", 2);
     shaderSSAOBlur.use();
@@ -219,13 +219,13 @@ int main(int argc, char* argv[])
         //input
         processInput(window);
         //render
-        glClearColor(0.0, 0.0, 0.0, 1.0);
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         //geomerty pass : render scene's geometry data into gbuffer
         glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glm::mat4 projection = glm::perspective(glm::radians(camera.zoom), float (SCR_WIDTH) / float(SCR_HEIGHT), 0.1, 50.0);
+        glm::mat4 projection = glm::perspective(glm::radians(camera.zoom), float(SCR_WIDTH) / float(SCR_HEIGHT), 0.1f, 50.0f);
         glm::mat4 view = camera.getViewMatrix();
         glm::mat4 model = glm::mat4(1.0f);
         shaderGeometryPass.use();
@@ -233,7 +233,7 @@ int main(int argc, char* argv[])
         shaderGeometryPass.setMat4("view", view);
         //room cube
         model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(0.0, 7.0f, 0.0f));
+        model = glm::translate(model, glm::vec3(0.0f, 7.0f, 0.0f));
         model = glm::scale(model , glm::vec3(7.5f, 7.5f, 7.5f));
         shaderGeometryPass.setMat4("model", model);
         shaderGeometryPass.setInt("invertedNormals", 1); //invert normals as we're inside the cube
@@ -244,7 +244,7 @@ int main(int argc, char* argv[])
         model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(0.0f, 0.5f, 0.0f));
         model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-        model = glm::scale(model, glm::vec(1.0f));
+        model = glm::scale(model, glm::vec3(1.0f));
         shaderGeometryPass.setMat4("model", model);
         backpack.draw(shaderGeometryPass);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -270,8 +270,8 @@ int main(int argc, char* argv[])
         glBindFramebuffer(GL_FRAMEBUFFER, ssaoBlurFBO);
         glClear(GL_COLOR_BUFFER_BIT);
         shaderSSAOBlur.use();
-        glActiveTexture(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D, ssaoColorBuffer);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, ssaoColorTexture);
         renderQuad();
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -291,7 +291,7 @@ int main(int argc, char* argv[])
         glActiveTexture(GL_TEXTURE2);
         glBindTexture(GL_TEXTURE_2D, gAlbedo);
         glActiveTexture(GL_TEXTURE3); //add extra SSAO texture to lighting pass
-        glBindTexture(GL_TEXTURE_2D, ssaoBlur)
+        glBindTexture(GL_TEXTURE_2D, ssaoBlurTexture);
         renderQuad();
 
         //swap buffer and IO event
@@ -452,41 +452,4 @@ void mouseCallback(GLFWwindow* window, double xpos, double ypos)
 void scrollCallback(GLFWwindow* window, double xoffset, double yoffset)
 {
     camera.processMouseScroll(yoffset);
-}
-
-GLuint loadTexture(const char* path, bool gammaCorrection)
-{
-    GLuint textureID;
-    int width, height, nrComponents;
-    GLenum dataFormat, internalFormat;
-
-    glGenTextures(1, &textureID);
-    unsigned char *data = stbi_load(path, &width, &height, &nrComponents, 0);
-
-    if (data) {
-        if (nrComponents == 1) {
-            internalFormat =  dataFormat = GL_RED;
-        } else if (nrComponents == 3) {
-            internalFormat = gammaCorrection ? GL_SRGB : GL_RGB;
-            dataFormat = GL_RGB;
-        } else if (nrComponents == 4) {
-            internalFormat = gammaCorrection ? GL_SRGB_ALPHA : GL_RGBA;
-            dataFormat = GL_RGBA;
-        }
-
-        glBindTexture(GL_TEXTURE_2D, textureID);
-        glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, dataFormat, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-        stbi_image_free(data);
-    } else {
-        std::cerr << "texture failed to load at path " << path << std::endl;
-        stbi_image_free(data);
-    }
-    return textureID;
 }
