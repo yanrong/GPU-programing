@@ -1,18 +1,21 @@
 CC := gcc
 CXX := g++
 
-LIBS := -lGL -lGLEW -lglut -lassimp
+LIBS := -lGL -lGLEW -lglut
 
 PWD := $(shell pwd)
 INCDIR := $(PWD)/../include
 COMMONDIR := $(PWD)/../common
 
 CXXFLAGS := -I$(PWD)/.. -I$(INCDIR)
-SRCFILES := $(wildcard ./*.cpp) $(wildcard $(COMMONDIR)/*.cpp)
+#CCSOURCE := $(wildcard $(INCDIR)/*.cpp) \
+#			$(wildcard ./*.cpp)
 
-TARGET := tutorial09
-
+SRCFILES := $(wildcard  *.cpp)
 OBJS := $(SRCFILES:.cpp=.o)
+
+TARGET := tutorial02
+
 $(TARGET): $(OBJS)
 	$(CXX) -o $@ $^ $(CXXFLAGS) $(LIBS)
 

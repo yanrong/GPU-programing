@@ -1,85 +1,42 @@
-#include <iostream>
-#include <string.h>
+/**
+ * @file tutorial04.cpp
+ * @author
+ * @brief
+ * @version 0.1
+ * @date 2022-04-06
+ *
+ * @copyright Copyright (c) 2022
+ * The code text origin from Etay Meiri' Demo
+ * Release under the GNU General Public License
+ */
 
-#include <cmath>
+#include <iostream>
+#include <cstring>
 #include <GL/glew.h>
 #include <GL/freeglut.h>
 
 #include "ogldev_math_3d.h"
 
-static void renderSceneCB();
-static void initializeGLUTCallbacks();
-static void createVertexBuffer();
-static void addShaders(GLuint program, const char* souce, GLenum type);
-static void compileShader(const char* vertex, const char *fragment);
-
-GLuint VBO, worldLocation;
-
-int main(int argc, char *argv[])
-{
-    glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);
-    glutInitWindowSize(1024, 768);
-    glutInitWindowPosition(100, 100);
-    glutCreateWindow("Tutorial 09");
-
-    initializeGLUTCallbacks();
-
-    //musty be done after glut is initialized
-    GLenum res = glewInit();
-    if (res!= GLEW_OK) {
-        std::cerr << "Error :" << glewGetErrorString(res) << std::endl;
-        return -1;
-    }
-
-    std::cout <<"GL version :" << glGetString(GL_VERSION);
-
-    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-    createVertexBuffer();
-    compileShader("shader.vs", "shader.fs");
-
-    glutMainLoop();
-    return 0;
-}
+static GLuint VBO;
 
 static void renderSceneCB()
 {
     glClear(GL_COLOR_BUFFER_BIT);
 
-    static float scale = 0.0f;
-    Matrix4f world;
-    scale += 0.001f;
-
-    world.m[0][0] = sinf(scale); world.m[0][1] = 0.0f;        world.m[0][2] = 0.0f;         world.m[0][3] = 0.0f;
-    world.m[1][0] = 0.0f;        world.m[1][1] = sinf(scale); world.m[1][2] = 0.0f;         world.m[1][3] = 0.0f;
-    world.m[2][0] = 0.0f;        world.m[2][1] = 0.0f;        world.m[2][2] = sinf(scale);  world.m[2][3] = 0.0f;
-    world.m[3][0] = 0.0f;        world.m[3][1] = 0.0f;        world.m[3][2] = 0.0f;         world.m[3][3] = 1.0f;
-
-    glUniformMatrix4fv(worldLocation, 1, GL_TRUE, &world.m[0][0]);
-
-    glEnableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
     glDrawArrays(GL_TRIANGLES, 0, 3);
-
     glDisableVertexAttribArray(0);
     glutSwapBuffers();
 }
 
-static void initializeGLUTCallbacks()
-{
-    glutDisplayFunc(renderSceneCB);
-    glutIdleFunc(renderSceneCB);
-}
-
 static void createVertexBuffer()
 {
-    GLfloat vertices[] = {
-        -1.0f, -1.0f, 0.0f,
-         1.0f, -1.0f, 0.0f,
-         0.0f,  1.0f, 0.0f
-    };
+    Vector3f vertices[3];
+    vertices[0] = Vector3f(-1.0f, -1.0f, 0.0f); //bottom left
+    vertices[1] = Vector3f(1.0f, -1.0f, 0.0f); //bottom right
+    vertices[2] = Vector3f(0.0f, 1.0f, 0.0f); //top
 
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -152,6 +109,37 @@ static void compileShader(const char* vertex, const char *fragment)
     }
 
     glUseProgram(program);
-    worldLocation = glGetUniformLocation(program, "gWorld");
-    assert(worldLocation != 0xffffffff);
+}
+
+int main(int argc, char *argv[])
+{
+    int width = 1920, height = 1080;
+    int x = 200, y = 100;
+    GLclampf Red = 0.0f, Green = 0.0f, Blue = 0.0f, Alpha = 0.0f;
+
+    glutInit(&argc, argv); //init glut
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA); //set display mode
+    glutInitWindowSize(width, height); // set window size
+    glutInitWindowPosition(x, y); //set (left upper)window position
+
+    int win = glutCreateWindow("Tutorial 04"); // creat window with title
+    std::cout << "window id: " << win << std::endl;
+
+    //must be done after glut is initialzed!
+    GLenum res = glewInit();
+    if (res != GLEW_OK) {
+        std::cerr << "Erros :" << glewGetErrorString(res) << std::endl;
+        return -1;
+    }
+
+    glClearColor(Red, Green, Blue, Alpha); // clear and set color
+
+    createVertexBuffer();
+    compileShader("shader.vs", "shader.fs");
+
+    glutDisplayFunc(renderSceneCB); //actually display(draw) function
+
+    glutMainLoop();
+
+    return 0;
 }
