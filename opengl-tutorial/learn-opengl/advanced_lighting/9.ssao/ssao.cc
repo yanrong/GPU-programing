@@ -54,7 +54,7 @@ int main(int argc, char* argv[])
     std::vector<glm::vec3> ssaoKernel;
     std::vector<glm::vec3> ssaoNoise;
     //define the attenuation parameters and calculate radius
-    const float linear = 0.9, quadratic = 0.032;
+    const float linear = 0.09, quadratic = 0.032;
 
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
