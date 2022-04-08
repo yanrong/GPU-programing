@@ -253,8 +253,8 @@ void renderSphere()
                 indices.push_back((y + 1) * (X_SEGMENTS + 1) + x);
                 indices.push_back(y * (X_SEGMENTS + 1) + x);
             }
-            oddRow = !oddRow;
         }
+        oddRow = !oddRow;
     }
 
     indexCount = indices.size();
